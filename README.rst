@@ -54,6 +54,19 @@ Serialization can be achieved easily, for example::
     >>> def deserialize(string):
     ...     return Data(**json.loads(string))
 
+Since the Model class simply calls the Attribute class for each parameter and the Attribute class in turn calls the
+given 'type', one could easily use functions instead of types to achieve more complex results and value parsing::
+
+    >>> from datetime import datetime
+    >>> def parse_date(string):
+    ...     return datetime.strptime(string, '%Y-%m-%d')
+
+    >>> class Data(Model):
+    ...     date = Attribute(parse_date)
+
+    >>> Data('2015-11-20').__attributes__()
+    { 'date': datetime.datetime(2015, 11, 20, 0, 0) }
+
 Tests
 -----
 

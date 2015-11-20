@@ -20,18 +20,15 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
-print(install_reqs)
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
       author_email     = "aljosha.friemann@gmail.com",
-      license          = "",
       description      = "very simple model framework",
       url              = "www.bitbucket.org/afriemann/simple_model.git",
-      keywords         = [],
-      # download_url     = "",
+      keywords         = ['model','serialization','validation'],
       version          = open('simple_model/VERSION').read().strip(),
       license          = open('LICENSE.txt').read(),
       long_description = open('README.rst').read(),
@@ -40,7 +37,6 @@ setup(name             = "simple_model",
       packages         = ["simple_model"],
       package_data     = { 'simple_model': ['VERSION'] },
       platforms        = 'linux'
-    },
 )
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

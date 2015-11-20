@@ -145,6 +145,20 @@ class ExampleTestCase(unittest.TestCase):
 
         self.assertEquals(data, deserialized)
 
+    def test_complex_types(self):
+        from datetime import datetime
+
+        def parse_date(string):
+            return datetime.strptime(string, '%Y-%m-%d')
+
+        class Data(Model):
+            date = Attribute(parse_date)
+
+        expected = { 'date': datetime(2015, 11, 20, 0, 0) }
+        actual = Data(date = '2015-11-20').__attributes__()
+
+        self.assertEquals(actual, expected)
+
 if __name__ == '__main__':
     unittest.main()
 
