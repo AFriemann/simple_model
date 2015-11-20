@@ -45,8 +45,8 @@ Serialization can be achieved easily, for example::
     >>> def serialize(model):
     ...     return json.dumps(model.__attributes__())
 
-    >>> def deserialize(json):
-    ...     return Data(**json.loads(json))
+    >>> def deserialize(string):
+    ...     return Data(**json.loads(string))
 
 Tests
 -----
