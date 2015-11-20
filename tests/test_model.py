@@ -63,6 +63,15 @@ class ModelTestCase(unittest.TestCase):
         except TypeError as e:
             self.fail('creation with unknown argument failed in spite of "_allow_unknown" set to True: ' + str(e))
 
+    def test_model_should_be_comparable_to_others(self):
+        uut1 = self.uut(name = 'test', number = 3, _allow_missing=True)
+        uut2 = self.uut(name = 'test', number = 3, _allow_missing=True)
+
+        self.assertEquals(uut1, uut2)
+
+        uut3 = self.uut(name = 'test', number = 1, _allow_missing=True)
+
+        self.assertNotEquals(uut1, uut3)
 
 class AttributeTestCase(unittest.TestCase):
     """Tests for the Attribute class"""
@@ -93,6 +102,48 @@ class AttributeTestCase(unittest.TestCase):
             self.assertEqual(uut(12), 12)
         except ValueError as e:
             self.fail('creation of attribute failed in spite of "fallback" set: ' + str(e))
+
+class ExampleTestCase(unittest.TestCase):
+    """Tests for the examples"""
+
+    class Data(Model):
+        name = Attribute(str)
+        some_value = Attribute(str, nullable=True)
+        another_value = Attribute(int, fallback=0)
+
+    def test_examples(self):
+        actual = self.Data(name = 'test', some_value = None, another_value = 12).__attributes__()
+        expected = { 'name': 'test', 'some_value': None, 'another_value': 12 }
+        self.assertEqual(actual, expected)
+
+        actual = self.Data(name = 'test', _allow_missing=True).__attributes__()
+        expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
+        self.assertEqual(actual, expected)
+
+        actual = self.Data(name = 'test', unknown_value = True, _allow_missing=True, _allow_unknown=True).__attributes__()
+        expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
+        self.assertEqual(actual, expected)
+
+        init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
+        actual = self.Data(**init_dict).__attributes__()
+        expected = { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
+        self.assertEqual(actual, expected)
+
+    def test_serialization(self):
+        import json
+
+        def serialize(model):
+            return json.dumps(model.__attributes__())
+
+        def deserialize(string):
+            return self.Data(**json.loads(string))
+
+        data = self.Data(name = 'test', some_value = 'val', another_value = 3)
+
+        serialized = serialize(data)
+        deserialized = deserialize(serialized)
+
+        self.assertEquals(data, deserialized)
 
 if __name__ == '__main__':
     unittest.main()

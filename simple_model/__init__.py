@@ -37,6 +37,13 @@ class Model(object):
     def __attributes__(self):
         return { k: getattr(self, k) for k in dir(self) if not k.startswith('_') }
 
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+            and self.__attributes__() == other.__attributes__())
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __init__(self, **kwargs):
         allow_unknown = kwargs.get('_allow_unknown', self.__allow_unknown__)
         allow_missing = kwargs.get('_allow_missing', self.__allow_missing__)

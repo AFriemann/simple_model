@@ -38,7 +38,7 @@ Examples::
 
 Initializing with unknown or missing attributes while not specifying to allow
 them will result in *TypeError*s.
-Serialization can be achieved easily::
+Serialization can be achieved easily, for example::
 
     >>> import json
     >>> def serialize(model):
