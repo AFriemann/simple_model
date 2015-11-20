@@ -37,7 +37,7 @@ Examples::
     { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
 
 Initializing with unknown or missing attributes while not specifying to allow
-them will result in *TypeError*s.
+them will result in a *TypeError*.
 
 Serialization can be achieved easily, for example::
 
@@ -58,4 +58,3 @@ To run the tests use tox::
 Or run py.test manually (not recommended, needs simple_module installed)::
 
     $ py.test .
-
