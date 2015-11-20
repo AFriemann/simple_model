@@ -32,3 +32,18 @@ Examples::
     >>> Data(name = 'test', unknown_value = True, _allow_missing=True, _allow_unknown=True).__attributes__()
     { 'name': 'test', 'some_value': None, 'another_value': 0 }
 
+    >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
+    >>> Data(**init_dict)
+    { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
+
+Initializing with unknown or missing attributes while not specifying to allow
+them will result in *TypeError*s.
+Serialization can be achieved easily::
+
+    >>> import json
+    >>> def serialize(model):
+    ...     return json.dumps(model.__attributes__())
+
+    >>> def deserialize(json):
+    ...     return Data(**json.loads(json))
+
