@@ -2,7 +2,7 @@ simple_model
 ============
 
 As the name says, this is a very simple model framework. It can be used for data
-verification and (de-)serialization.
+validation and (de-)serialization.
 
 Installation
 ------------
