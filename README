@@ -39,6 +39,12 @@ Examples::
 Initializing with unknown or missing attributes while not specifying to allow
 them will result in a *TypeError*.
 
+The default behaviour for missing/unknown attributes can be changed::
+
+    >>> class Data(Model):
+    ...     __allow_unknown__ = True
+    ...     __allow_missing__ = True
+
 Serialization can be achieved easily, for example::
 
     >>> import json
