@@ -1,2 +1,34 @@
-Simple Model
+simple_model
 ============
+
+As the name says, this is a very simple model framework. It can be used for data
+verification and (de-)serialization.
+
+Installation
+------------
+
+Install with pip::
+
+    $ pip install --user simple_model
+
+Usage
+-----
+
+Examples::
+
+    >>> from simple_model import Model, Attribute
+
+    >>> class Data(Model):
+    ...     name = Attribute(str)
+    ...     some_value = Attribute(str, nullable=True)
+    ...     another_value = Attribute(int, fallback=0)
+
+    >>> Data(name = 'test', some_value = None, another_value = 12).__attributes__()
+    { 'name': 'test', 'some_value': None, 'another_value': 12 }
+
+    >>> Data(name = 'test', _allow_missing=True).__attributes__()
+    { 'name': 'test', 'some_value': None, 'another_value': 0 }
+
+    >>> Data(name = 'test', unknown_value = True, _allow_missing=True, _allow_unknown=True).__attributes__()
+    { 'name': 'test', 'some_value': None, 'another_value': 0 }
+
