@@ -22,11 +22,14 @@ class Attribute:
 
     def __call__(self, value):
         if value is None:
-            if not self.__nullable__ and self.__fallback__ is None:
+            if self.__fallback__ is not None:
+                try: return self.__type(self.__fallback__())
+                except TypeError: return self.__type(self.__fallback__)
+            elif self.__nullable__:
+                return None
+            else:
                 raise ValueError('attribute value must not be None')
-            try: return self.__fallback__()
-            except TypeError: return self.__fallback__
-        return self.__type(value) if value is not None else None
+        return self.__type(value)
 
 class Model(object):
     __metaclass__ = abc.ABCMeta
