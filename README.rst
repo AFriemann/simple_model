@@ -67,6 +67,17 @@ given 'type', one could easily use functions instead of types to achieve more co
     >>> Data('2015-11-20').__attributes__()
     { 'date': datetime.datetime(2015, 11, 20, 0, 0) }
 
+Fallback values can also be given as functions ::
+
+    >>> def fun():
+    ...     return "foo"
+
+    >>> class Data(Model):
+    ...     point = Attribute(str, fallback=fun)
+
+    >>> Data(_allow_missing=True).__attributes__()
+    { 'point': 'foo' }
+
 Tests
 -----
 
