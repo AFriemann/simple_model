@@ -92,7 +92,17 @@ class AttributeTestCase(unittest.TestCase):
         try:
             self.assertEqual(uut(None), 'test')
         except ValueError as e:
-            self.fail('creation of attribute failed in spite of "__nullable__" set to True: ' + str(e))
+            self.fail('creation of attribute failed in spite of fallback being given: ' + str(e))
+
+    def test_attribute_should_call_fallback_if_function(self):
+        def test_function():
+            return 'test'
+
+        uut = Attribute(str, fallback=test_function)
+        try:
+            self.assertEqual(uut(None), 'test')
+        except ValueError as e:
+            self.fail('creation of attribute failed in spite of fallback function being given: ' + str(e))
 
     def test_attribute_should_cast_value_to_given_type(self):
         try:

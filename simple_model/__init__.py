@@ -24,7 +24,8 @@ class Attribute:
         if value is None:
             if not self.__nullable__ and self.__fallback__ is None:
                 raise ValueError('attribute value must not be None')
-            return self.__fallback__
+            try: return self.__fallback__()
+            except TypeError: return self.__fallback__
         return self.__type(value) if value is not None else None
 
 class Model(object):
