@@ -31,6 +31,16 @@ class Attribute:
                 raise ValueError('attribute value must not be None')
         return self.__type(value)
 
+class AttributeList(Attribute):
+    def __call__(self, lst):
+        if not isinstance(lst, list):
+            raise ValueError(lst)
+
+        result = []
+        for value in lst:
+            result.append(super(AttributeList, self).__call__(value))
+        return result
+
 class Model(object):
     __metaclass__ = abc.ABCMeta
     __allow_unknown__ = False
