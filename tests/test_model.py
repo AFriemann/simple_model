@@ -65,6 +65,11 @@ class ModelTestCase(unittest.TestCase):
 
         self.assertNotEquals(uut1, uut3)
 
+    def test_model_should_provide_legacy_attributes_method(self):
+        uut = self.uut(name = 'test', number = 3, allow_missing=True)
+
+        self.assertEquals(uut.__attributes__(), dict(uut))
+
 class AttributeTestCase(unittest.TestCase):
     """Tests for the Attribute class"""
 
@@ -114,20 +119,20 @@ class ExampleTestCase(unittest.TestCase):
         another_value = Attribute(int, fallback=0)
 
     def test_examples(self):
-        actual = vars(self.Data(name = 'test', some_value = None, another_value = 12))
+        actual = dict(self.Data(name = 'test', some_value = None, another_value = 12))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 12 }
         self.assertEqual(actual, expected)
 
-        actual = vars(self.Data(name = 'test', allow_missing=True))
+        actual = dict(self.Data(name = 'test', allow_missing=True))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
-        actual = vars(self.Data(name = 'test', unknown_value = True, allow_missing=True, allow_unknown=True))
+        actual = dict(self.Data(name = 'test', unknown_value = True, allow_missing=True, allow_unknown=True))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
         init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
-        actual = vars(self.Data(**init_dict))
+        actual = dict(self.Data(**init_dict))
         expected = { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
         self.assertEqual(actual, expected)
 
@@ -135,7 +140,7 @@ class ExampleTestCase(unittest.TestCase):
         import json
 
         def serialize(model):
-            return json.dumps(vars(model))
+            return json.dumps(dict(model))
 
         def deserialize(string):
             return self.Data(**json.loads(string))
@@ -157,7 +162,7 @@ class ExampleTestCase(unittest.TestCase):
             date = Attribute(parse_date)
 
         expected = { 'date': datetime(2015, 11, 20, 0, 0) }
-        actual = vars(Data(date = '2015-11-20'))
+        actual = dict(Data(date = '2015-11-20'))
 
         self.assertEquals(actual, expected)
 

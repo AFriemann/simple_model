@@ -9,6 +9,8 @@
 
 """
 
+from simple_model.decorators import deprecated
+
 import abc
 
 class Attribute:
@@ -39,10 +41,16 @@ class AttributeList(Attribute):
 
 class Model(object):
     __metaclass__ = abc.ABCMeta
+
     _allow_missing = False
 
+    @deprecated('__attributes__ is deprecated, please use cast to dict instead')
     def __attributes__(self):
-        return { k: getattr(self, k) for k in dir(self) if not k.startswith('_') }
+        return dict(self)
+
+    def __iter__(self):
+        for key in dir(self):
+            if not key.startswith('_'): yield key, getattr(self, key)
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
@@ -54,7 +62,7 @@ class Model(object):
     def __init__(self, **kwargs):
         allow_missing = kwargs.get('allow_missing', self._allow_missing)
 
-        for key, value in self.__attributes__().items():
+        for key, value in dict(self).items():
             if key not in kwargs:
                 assert allow_missing, "%s not found in %s" % (key, kwargs)
 
