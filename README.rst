@@ -23,33 +23,32 @@ Examples::
     ...     some_value = Attribute(str, nullable=True)
     ...     another_value = Attribute(int, fallback=0)
 
-    >>> Data(name = 'test', some_value = None, another_value = 12).__attributes__()
+    >>> dict(Data(name = 'test', some_value = None, another_value = 12))
     { 'name': 'test', 'some_value': None, 'another_value': 12 }
 
-    >>> Data(name = 'test', _allow_missing=True).__attributes__()
+    >>> dict(Data(name = 'test', allow_missing=True))
     { 'name': 'test', 'some_value': None, 'another_value': 0 }
 
-    >>> Data(name = 'test', unknown_value = True, _allow_missing=True, _allow_unknown=True).__attributes__()
+    >>> dict(Data(name = 'test', unknown_value = True, allow_missing=True))
     { 'name': 'test', 'some_value': None, 'another_value': 0 }
 
     >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
     >>> Data(**init_dict)
     { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
 
-Initializing with unknown or missing attributes while not specifying to allow
-them will result in a *TypeError*.
+Initializing with missing attributes while not specifying to allow
+them will result in an *AssertionError*.
 
-The default behaviour for missing/unknown attributes can be changed::
+The default behaviour for missing attributes can be changed::
 
     >>> class Data(Model):
-    ...     __allow_unknown__ = True
-    ...     __allow_missing__ = True
+    ...     _allow_missing = True
 
 Serialization can be achieved easily, for example::
 
     >>> import json
     >>> def serialize(model):
-    ...     return json.dumps(model.__attributes__())
+    ...     return json.dumps(dict(model))
 
     >>> def deserialize(string):
     ...     return Data(**json.loads(string))
@@ -64,7 +63,7 @@ given 'type', one could easily use functions instead of types to achieve more co
     >>> class Data(Model):
     ...     date = Attribute(parse_date)
 
-    >>> Data('2015-11-20').__attributes__()
+    >>> dict(Data('2015-11-20'))
     { 'date': datetime.datetime(2015, 11, 20, 0, 0) }
 
 Fallback values can also be given as functions ::
@@ -75,7 +74,7 @@ Fallback values can also be given as functions ::
     >>> class Data(Model):
     ...     point = Attribute(str, fallback=fun)
 
-    >>> Data(_allow_missing=True).__attributes__()
+    >>> dict(Data(allow_missing=True))
     { 'point': 'foo' }
 
 Tests
