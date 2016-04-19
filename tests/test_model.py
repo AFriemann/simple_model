@@ -20,38 +20,30 @@ class ModelTestCase(unittest.TestCase):
         class UUT(Model):
             name = Attribute(str)
             number = Attribute(int)
-            null = Attribute(str, nullable=True)
+            null = Attribute(str, optional=True)
             default_false = Attribute(bool, fallback=False)
         return UUT
 
     def setUp(self):
         self.uut = self.create_uut()
 
-    def test_model_should_not_allow_missing_arguments_by_default(self):
-        with self.assertRaises(TypeError):
-            self.uut(name = 'test', number = 3, default_false = True)
-
-    def test_model_should_nullify_missing_nullable_arguments_if_specified(self):
+    def test_model_should_nullify_missing_optional_arguments(self):
         try:
-            uut = self.uut(name = 'test', number = 3, _allow_missing=True)
+            uut = self.uut(name = 'test', number = 3, allow_missing=True)
             self.assertIsNone(uut.null)
             self.assertIsNotNone(uut.default_false)
             self.assertFalse(uut.default_false)
         except TypeError as e:
-            self.fail('creation with missing argument failed in spite of "_allow_missing" set to True: ' + str(e))
+            self.fail('creation with missing argument failed in spite of "allow_missing" set to True: ' + str(e))
 
         with self.assertRaises(ValueError):
-            self.uut(name = 'test', _allow_missing=True)
+            self.uut(name = 'test', allow_missing=True)
 
-    def test_model_should_not_allow_unknown_arguments_by_default(self):
-        with self.assertRaises(TypeError):
+    def test_model_should_allow_unknown_arguments_by_default(self):
+        try:
             self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2)
 
-    def test_model_should_allow_unknown_arguments_if_specified(self):
-        try:
-            self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2, _allow_unknown=True)
-
-            self.uut.__allow_unknown__ = True
+            self.uut._allow_unknown = True
             self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2)
         except TypeError as e:
             self.fail('creation with unknown argument failed in spite of "allow_unknown" set to True: ' + str(e))
@@ -59,17 +51,17 @@ class ModelTestCase(unittest.TestCase):
     def test_model_should_not_store_unknown_argument(self):
         try:
             with self.assertRaises(AttributeError):
-                self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2, _allow_unknown=True).unkown
+                self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2, allow_unknown=True).unkown
         except TypeError as e:
-            self.fail('creation with unknown argument failed in spite of "_allow_unknown" set to True: ' + str(e))
+            self.fail('creation with unknown argument failed in spite of "allow_unknown" set to True: ' + str(e))
 
     def test_model_should_be_comparable_to_others(self):
-        uut1 = self.uut(name = 'test', number = 3, _allow_missing=True)
-        uut2 = self.uut(name = 'test', number = 3, _allow_missing=True)
+        uut1 = self.uut(name = 'test', number = 3, allow_missing=True)
+        uut2 = self.uut(name = 'test', number = 3, allow_missing=True)
 
         self.assertEquals(uut1, uut2)
 
-        uut3 = self.uut(name = 'test', number = 1, _allow_missing=True)
+        uut3 = self.uut(name = 'test', number = 1, allow_missing=True)
 
         self.assertNotEquals(uut1, uut3)
 
@@ -81,11 +73,11 @@ class AttributeTestCase(unittest.TestCase):
             Attribute(str)(None)
 
     def test_attribute_should_be_nullifiable_if_specified(self):
-        uut = Attribute(str, nullable=True)
+        uut = Attribute(str, optional=True)
         try:
             self.assertIsNone(uut(None))
         except ValueError as e:
-            self.fail('creation of attribute failed in spite of "__nullable__" set to True: ' + str(e))
+            self.fail('creation of attribute failed in spite of "optional" set to True: ' + str(e))
 
     def test_attribute_should_use_fallback_if_specified(self):
         uut = Attribute(str, fallback='test')
@@ -118,24 +110,24 @@ class ExampleTestCase(unittest.TestCase):
 
     class Data(Model):
         name = Attribute(str)
-        some_value = Attribute(str, nullable=True)
+        some_value = Attribute(str, optional=True)
         another_value = Attribute(int, fallback=0)
 
     def test_examples(self):
-        actual = self.Data(name = 'test', some_value = None, another_value = 12).__attributes__()
+        actual = vars(self.Data(name = 'test', some_value = None, another_value = 12))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 12 }
         self.assertEqual(actual, expected)
 
-        actual = self.Data(name = 'test', _allow_missing=True).__attributes__()
+        actual = vars(self.Data(name = 'test', allow_missing=True))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
-        actual = self.Data(name = 'test', unknown_value = True, _allow_missing=True, _allow_unknown=True).__attributes__()
+        actual = vars(self.Data(name = 'test', unknown_value = True, allow_missing=True, allow_unknown=True))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
         init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
-        actual = self.Data(**init_dict).__attributes__()
+        actual = vars(self.Data(**init_dict))
         expected = { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
         self.assertEqual(actual, expected)
 
@@ -143,7 +135,7 @@ class ExampleTestCase(unittest.TestCase):
         import json
 
         def serialize(model):
-            return json.dumps(model.__attributes__())
+            return json.dumps(vars(model))
 
         def deserialize(string):
             return self.Data(**json.loads(string))
@@ -165,7 +157,7 @@ class ExampleTestCase(unittest.TestCase):
             date = Attribute(parse_date)
 
         expected = { 'date': datetime(2015, 11, 20, 0, 0) }
-        actual = Data(date = '2015-11-20').__attributes__()
+        actual = vars(Data(date = '2015-11-20'))
 
         self.assertEquals(actual, expected)
 
