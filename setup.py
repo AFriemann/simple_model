@@ -17,11 +17,13 @@ except ImportError:
     from distutils.core import setup
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return open(os.path.join(os.path.dirname(__file__), fname), 'r').read()
 
 install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
+
+from simple_model import __version__
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
@@ -29,9 +31,9 @@ setup(name             = "simple_model",
       description      = "very simple model framework",
       url              = "https://www.bitbucket.org/afriemann/simple_model.git",
       keywords         = ['model','serialization','validation'],
-      version          = open('simple_model/VERSION').read().strip(),
-      license          = open('LICENSE.txt').read(),
-      long_description = open('README.rst').read(),
+      version          = __version__,
+      license          = read('LICENSE.txt'),
+      long_description = read('README.rst'),
       install_requires = requirements,
       classifiers      = [],
       packages         = ["simple_model"],

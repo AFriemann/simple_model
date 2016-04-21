@@ -13,6 +13,8 @@ from simple_model.decorators import deprecated
 
 import abc
 
+__version__ = '0.1.1'
+
 class Attribute:
     def __init__(self, t, optional=False, fallback=None):
         assert t is not None, "attribute type can not be None"
@@ -33,7 +35,7 @@ class Attribute:
         return self._type(value)
 
 class AttributeList(Attribute):
-    def __call__(self, *lst):
+    def __call__(self, lst = []):
         result = []
         for value in lst:
             result.append(super(AttributeList, self).__call__(value))
@@ -41,8 +43,6 @@ class AttributeList(Attribute):
 
 class Model(object):
     __metaclass__ = abc.ABCMeta
-
-    _allow_missing = False
 
     @deprecated('__attributes__ is deprecated, please use cast to dict instead')
     def __attributes__(self):
@@ -60,12 +60,7 @@ class Model(object):
         return not self.__eq__(other)
 
     def __init__(self, **kwargs):
-        allow_missing = kwargs.get('allow_missing', self._allow_missing)
-
         for key, value in dict(self).items():
-            if key not in kwargs:
-                assert allow_missing, "%s not found in %s" % (key, kwargs)
-
             setattr(self, key, value(kwargs.get(key)))
 
     def __str__(self):
