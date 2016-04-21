@@ -13,7 +13,7 @@ from simple_model.decorators import deprecated
 
 import abc
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 class Attribute:
     def __init__(self, t, optional=False, fallback=None):
@@ -32,13 +32,14 @@ class Attribute:
                 return None
             else:
                 raise ValueError('attribute value must not be None')
-        return self._type(value)
+        try: return self._type(**value)
+        except: return self._type(value)
 
 class AttributeList(Attribute):
     def __call__(self, lst = []):
         result = []
         for value in lst:
-            result.append(super(AttributeList, self).__call__(value))
+            result.append(Attribute.__call__(self, value))
         return result
 
 class Model(object):

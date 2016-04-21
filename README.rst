@@ -26,23 +26,22 @@ Examples::
     >>> dict(Data(name = 'test', some_value = None, another_value = 12))
     { 'name': 'test', 'some_value': None, 'another_value': 12 }
 
-    >>> dict(Data(name = 'test', allow_missing=True))
-    { 'name': 'test', 'some_value': None, 'another_value': 0 }
-
-    >>> dict(Data(name = 'test', unknown_value = True, allow_missing=True))
+    >>> dict(Data(name = 'test'))
     { 'name': 'test', 'some_value': None, 'another_value': 0 }
 
     >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
     >>> Data(**init_dict)
     { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
 
-Initializing with missing attributes while not specifying to allow
-them will result in an *AssertionError*.
+Initializing with missing attributes while not specifying them as optional or providing a fallback value
+will result in an *ValueError*.
+Note that *fallback* takes precedence over *optional*, specifying both is unnecessary.
 
-The default behaviour for missing attributes can be changed::
+Unknown values will be ignored::
 
-    >>> class Data(Model):
-    ...     _allow_missing = True
+    >>> dict(Data(name = 'test', unknown_value = True))
+    { 'name': 'test', 'some_value': None, 'another_value': 0 }
+
 
 Serialization can be achieved easily, for example::
 
@@ -74,9 +73,29 @@ Fallback values can also be given as functions ::
     >>> class Data(Model):
     ...     point = Attribute(str, fallback=fun)
 
-    >>> dict(Data(allow_missing=True))
+    >>> dict(Data())
     { 'point': 'foo' }
 
+If you need to verify Lists of objects, use the provided *AttributeList* class::
+
+     >>> class Data(Model):
+     ...     point = AttributeList(str)
+
+     >>> dict(Data(point=['abc', 'def', 'ghi']))
+     { 'point': ['abc', 'def', 'ghi'] }
+
+For more complex data, use Models to verify::
+
+
+     >>> class SubData(Model):
+     ...     some_value = AttributeList(str)
+
+     >>> class Data(Model):
+     ...     point = Attribute(SubData)
+
+     >>> dict(Data(point={'some_value': ['abc', 'def', 'ghi']}))
+     { 'point': ['abc', 'def', 'ghi'] }
+        
 Tests
 -----
 

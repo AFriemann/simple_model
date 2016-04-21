@@ -11,7 +11,7 @@
 
 import unittest
 
-from simple_model import Model, Attribute
+from simple_model import Model, Attribute, AttributeList
 
 class ModelTestCase(unittest.TestCase):
     """Tests for the Model class"""
@@ -29,44 +29,38 @@ class ModelTestCase(unittest.TestCase):
 
     def test_model_should_nullify_missing_optional_arguments(self):
         try:
-            uut = self.uut(name = 'test', number = 3, allow_missing=True)
+            uut = self.uut(name = 'test', number = 3)
             self.assertIsNone(uut.null)
             self.assertIsNotNone(uut.default_false)
             self.assertFalse(uut.default_false)
-        except TypeError as e:
-            self.fail('creation with missing argument failed in spite of "allow_missing" set to True: ' + str(e))
+        except Exception as e:
+            self.fail('creation with missing argument failed in spite of optional/fallback set to True: ' + str(e))
 
         with self.assertRaises(ValueError):
-            self.uut(name = 'test', allow_missing=True)
+            self.uut(name = 'test')
 
     def test_model_should_allow_unknown_arguments_by_default(self):
         try:
             self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2)
-
-            self.uut._allow_unknown = True
-            self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2)
-        except TypeError as e:
-            self.fail('creation with unknown argument failed in spite of "allow_unknown" set to True: ' + str(e))
+        except Exception as e:
+            self.fail('creation with unknown argument failed: ' + str(e))
 
     def test_model_should_not_store_unknown_argument(self):
-        try:
-            with self.assertRaises(AttributeError):
-                self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2, allow_unknown=True).unkown
-        except TypeError as e:
-            self.fail('creation with unknown argument failed in spite of "allow_unknown" set to True: ' + str(e))
+        with self.assertRaises(AttributeError):
+            self.uut(name = 'test', number = 3, null = None, default_false = True, unknown = 2).unkown
 
     def test_model_should_be_comparable_to_others(self):
-        uut1 = self.uut(name = 'test', number = 3, allow_missing=True)
-        uut2 = self.uut(name = 'test', number = 3, allow_missing=True)
+        uut1 = self.uut(name = 'test', number = 3)
+        uut2 = self.uut(name = 'test', number = 3)
 
         self.assertEquals(uut1, uut2)
 
-        uut3 = self.uut(name = 'test', number = 1, allow_missing=True)
+        uut3 = self.uut(name = 'test', number = 1)
 
         self.assertNotEquals(uut1, uut3)
 
     def test_model_should_provide_legacy_attributes_method(self):
-        uut = self.uut(name = 'test', number = 3, allow_missing=True)
+        uut = self.uut(name = 'test', number = 3)
 
         self.assertEquals(uut.__attributes__(), dict(uut))
 
@@ -110,6 +104,34 @@ class AttributeTestCase(unittest.TestCase):
         except ValueError as e:
             self.fail('creation of attribute failed in spite of "fallback" set: ' + str(e))
 
+
+class AttributeListTestCase(unittest.TestCase):
+    uut = AttributeList(int)
+
+    def test_attribute_list_should_cast_all_values(self):
+        try:
+            self.assertEqual(self.uut([1, 2, "3"]), [1,2,3])
+        except Exception as e:
+            self.fail('failed to validate list with AttributeList class: ' + str(e))
+
+    def test_attribute_list_should_raise_value_errors(self):
+        with self.assertRaises(ValueError):
+            self.uut([1, "abc", 3])
+
+class ModelCastTestCase(unittest.TestCase):
+    def test_model_casting(self):
+        class Data1(Model):
+            value = Attribute(str)
+
+        class Data2(Model):
+            model_value = Attribute(Data1)
+
+        try:
+            data2 = Data2(model_value = { 'value': 'abc' })
+            self.assertEqual(data2.model_value.value, "abc")
+        except Exception as e:
+            self.fail("using model classes as Attributes did not work: " + str(e))
+
 class ExampleTestCase(unittest.TestCase):
     """Tests for the examples"""
 
@@ -123,11 +145,11 @@ class ExampleTestCase(unittest.TestCase):
         expected = { 'name': 'test', 'some_value': None, 'another_value': 12 }
         self.assertEqual(actual, expected)
 
-        actual = dict(self.Data(name = 'test', allow_missing=True))
+        actual = dict(self.Data(name = 'test'))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
-        actual = dict(self.Data(name = 'test', unknown_value = True, allow_missing=True, allow_unknown=True))
+        actual = dict(self.Data(name = 'test', unknown_value = True))
         expected = { 'name': 'test', 'some_value': None, 'another_value': 0 }
         self.assertEqual(actual, expected)
 
