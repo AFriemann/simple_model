@@ -86,7 +86,6 @@ If you need to verify Lists of objects, use the provided *AttributeList* class::
 
 For more complex data, use Models to verify::
 
-
      >>> class SubData(Model):
      ...     some_value = AttributeList(str)
 

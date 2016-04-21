@@ -51,7 +51,10 @@ class Model(object):
 
     def __iter__(self):
         for key in dir(self):
-            if not key.startswith('_'): yield key, getattr(self, key)
+            if not key.startswith('_'):
+                value = getattr(self, key)
+                if isinstance(value, Model): yield key, dict(value)
+                else: yield key, value
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)

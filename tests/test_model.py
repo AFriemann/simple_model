@@ -132,6 +132,16 @@ class ModelCastTestCase(unittest.TestCase):
         except Exception as e:
             self.fail("using model classes as Attributes did not work: " + str(e))
 
+    def test_serialization(self):
+        class Data1(Model):
+            value = Attribute(str)
+
+        class Data2(Model):
+            model_value = Attribute(Data1)
+
+        data2 = Data2(model_value = { 'value': 'abc' })
+        self.assertDictEqual(dict(data2), {'model_value': {'value': 'abc'}})
+
 class ExampleTestCase(unittest.TestCase):
     """Tests for the examples"""
 
