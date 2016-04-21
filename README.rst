@@ -20,7 +20,7 @@ Examples::
 
     >>> class Data(Model):
     ...     name = Attribute(str)
-    ...     some_value = Attribute(str, nullable=True)
+    ...     some_value = Attribute(str, optional=True)
     ...     another_value = Attribute(int, fallback=0)
 
     >>> dict(Data(name = 'test', some_value = None, another_value = 12))
