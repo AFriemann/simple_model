@@ -13,7 +13,7 @@ from simple_model.decorators import deprecated
 
 import abc
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 class Attribute:
     def __init__(self, t, optional=False, fallback=None):
@@ -71,8 +71,9 @@ class Model(object):
         for key in dir(self):
             if not key.startswith('_'):
                 value = getattr(self, key)
-                if isinstance(value, Model): yield key, dict(value)
-                else: yield key, value
+                if isinstance(value, list): value = [ dict(v) if isinstance(v, Model) else v for v in value ]
+                if isinstance(value, Model): value = dict(value)
+                yield key, value
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
@@ -87,7 +88,7 @@ class Model(object):
             try:
                 setattr(self, key, value(kwargs.get(key)))
             except Exception as e:
-                failed_values += (str(key), str(value), str(e)) 
+                failed_values.append({ 'key': str(key), 'value': str(value), 'exception': '%s: %s' % (e.__class__.__name__, str(e)) })
         assert len(failed_values) == 0, "failed to parse data: %s" % failed_values
 
     def __str__(self):

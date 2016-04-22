@@ -36,7 +36,7 @@ class ModelTestCase(unittest.TestCase):
         except Exception as e:
             self.fail('creation with missing argument failed in spite of optional/fallback set to True: ' + str(e))
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AssertionError):
             self.uut(name = 'test')
 
     def test_model_should_allow_unknown_arguments_by_default(self):
@@ -118,28 +118,54 @@ class AttributeListTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.uut([1, "abc", 3])
 
-class ModelCastTestCase(unittest.TestCase):
-    def test_model_casting(self):
+    def test_encapsulated_validation(self):
         class Data1(Model):
             value = Attribute(str)
+        class Data2(Model):
+            list_value = AttributeList(Data1, optional=True)
 
+        try:
+            data2 = Data2()
+            self.assertEqual(data2.list_value, [])
+
+            data2 = Data2(list_value = [{'value': 'a'}, {'value': 'b'}])
+            self.assertEqual(data2.list_value[0].value, 'a')
+        except Exception as e:
+            self.fail("data validation with encapsulated Models in AttributeLists failed: " + str(e))
+
+    def test_encapsulated_serialization(self):
+        class Data1(Model):
+            value = Attribute(str)
+        class Data2(Model):
+            list_value = AttributeList(Data1, optional=True)
+
+        try:
+            data2 = Data2()
+            self.assertEqual(dict(data2), {'list_value': []})
+
+            data2 = Data2(list_value = [{'value': 'a'}, {'value': 'b'}])
+            self.assertDictEqual(dict(data2), {'list_value': [{'value': 'a'},{'value': 'b'}]})
+        except Exception as e:
+            self.fail("serialization with encapsulated Models in AttributeLists failed: " + str(e))
+
+class ModelCastTestCase(unittest.TestCase):
+    def setUp(self):
+        class Data1(Model):
+            value = Attribute(str)
         class Data2(Model):
             model_value = Attribute(Data1)
 
+        self.Data2 = Data2
+
+    def test_model_casting(self):
         try:
-            data2 = Data2(model_value = { 'value': 'abc' })
+            data2 = self.Data2(model_value = { 'value': 'abc' })
             self.assertEqual(data2.model_value.value, "abc")
         except Exception as e:
             self.fail("using model classes as Attributes did not work: " + str(e))
 
     def test_serialization(self):
-        class Data1(Model):
-            value = Attribute(str)
-
-        class Data2(Model):
-            model_value = Attribute(Data1)
-
-        data2 = Data2(model_value = { 'value': 'abc' })
+        data2 = self.Data2(model_value = { 'value': 'abc' })
         self.assertDictEqual(dict(data2), {'model_value': {'value': 'abc'}})
 
 class ExampleTestCase(unittest.TestCase):
