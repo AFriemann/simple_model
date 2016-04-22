@@ -9,6 +9,9 @@
 
 """
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 import unittest
 
 from simple_model import Model, Attribute, AttributeList

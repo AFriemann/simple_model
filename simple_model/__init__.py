@@ -9,11 +9,13 @@
 
 """
 
+__version__ = '0.1.5'
+
+import abc, logging
+
 from simple_model.decorators import deprecated
 
-import abc
-
-__version__ = '0.1.4'
+__logger__ = logging.getLogger(__name__)
 
 class Attribute:
     def __init__(self, t, optional=False, fallback=None):
@@ -84,11 +86,14 @@ class Model(object):
 
     def __init__(self, **kwargs):
         failed_values = []
-        for key, value in dict(self).items():
+        for name, attribute in dict(self).items():
+            value = kwargs.get(name)
+            __logger__.debug('parsing attribute %s %s with value "%s"' % (name, attribute, value))
             try:
-                setattr(self, key, value(kwargs.get(key)))
+                setattr(self, name, attribute(value))
             except Exception as e:
-                failed_values.append({ 'key': str(key), 'value': str(value), 'exception': '%s: %s' % (e.__class__.__name__, str(e)) })
+                __logger__.debug('failed to parse value "%s" with %s' % (value, attribute))
+                failed_values.append({ 'key': str(name), 'attribute': str(attribute), 'value': str(value), 'exception': '%s: %s' % (e.__class__.__name__, str(e)) })
         assert len(failed_values) == 0, "failed to parse data: %s" % failed_values
 
     def __str__(self):
