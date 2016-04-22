@@ -82,8 +82,13 @@ class Model(object):
         return not self.__eq__(other)
 
     def __init__(self, **kwargs):
+        failed_values = []
         for key, value in dict(self).items():
-            setattr(self, key, value(kwargs.get(key)))
+            try:
+                setattr(self, key, value(kwargs.get(key)))
+            except Exception as e:
+                failed_values += (str(key), str(value), str(e)) 
+        assert len(failed_values) == 0, "failed to parse data: %s" % failed_values
 
     def __str__(self):
         return str(vars(self))
