@@ -13,7 +13,7 @@ from simple_model.decorators import deprecated
 
 import abc
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 class Attribute:
     def __init__(self, t, optional=False, fallback=None):
@@ -35,8 +35,26 @@ class Attribute:
         try: return self._type(**value)
         except: return self._type(value)
 
+    def __iter__(self):
+        yield 'class', self.__class__.__name__
+        yield 'type', self._type
+        yield 'optional', self._optional
+        yield 'fallback', self._fallback
+
+    def __str__(self):
+        return str(dict(self))
+
 class AttributeList(Attribute):
-    def __call__(self, lst = []):
+    def __call__(self, lst):
+        if lst is None:
+            if self._fallback is not None:
+                try: lst = self._fallback()
+                except TypeError: lst = self._fallback
+            elif self._optional:
+                lst = []
+            else:
+                raise ValueError('attribute list must not be None')
+
         result = []
         for value in lst:
             result.append(Attribute.__call__(self, value))
