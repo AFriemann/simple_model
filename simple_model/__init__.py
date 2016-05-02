@@ -9,7 +9,7 @@
 
 """
 
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 
 import abc, logging
 
@@ -34,8 +34,11 @@ class Attribute:
                 return None
             else:
                 raise ValueError('attribute value must not be None')
-        try: return self._type(**value)
-        except: return self._type(value)
+        elif type(value) is self._type:
+            return value
+        else:
+            try: return self._type(**value)
+            except: return self._type(value)
 
     def __iter__(self):
         yield 'class', self.__class__.__name__
