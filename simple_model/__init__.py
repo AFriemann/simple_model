@@ -9,7 +9,7 @@
 
 """
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 
 import abc, logging
 
@@ -100,6 +100,6 @@ class Model(object):
         assert len(failed_values) == 0, "failed to parse data: %s" % failed_values
 
     def __str__(self):
-        return str(vars(self))
+        return str(dict(self))
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

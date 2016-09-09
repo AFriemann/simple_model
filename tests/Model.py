@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 
-from simple_model import Model, Attribute
+from simple_model import Model, Attribute, AttributeList
 
 class ModelTestCase(unittest.TestCase):
     """Tests for the Model class"""
@@ -29,6 +29,9 @@ class ModelTestCase(unittest.TestCase):
 
     def setUp(self):
         self.uut = self.create_uut()
+
+    def tearDown(self):
+        del self.uut
 
     def test_model_should_nullify_missing_optional_arguments(self):
         try:
@@ -73,8 +76,18 @@ class ModelCastTestCase(unittest.TestCase):
             value = Attribute(str)
         class Data2(Model):
             model_value = Attribute(Data1)
+        class Data3(Model):
+            data1 = AttributeList(Data1)
+            data2 = Attribute(Data2)
 
+        self.Data1 = Data1
         self.Data2 = Data2
+        self.Data3 = Data3
+
+    def tearDown(self):
+        del self.Data1
+        del self.Data2
+        del self.Data3
 
     def test_model_casting(self):
         try:
@@ -86,5 +99,23 @@ class ModelCastTestCase(unittest.TestCase):
     def test_serialization(self):
         data2 = self.Data2(model_value = { 'value': 'abc' })
         self.assertDictEqual(dict(data2), {'model_value': {'value': 'abc'}})
+
+    def test_model_should_serialize_all_contained_models(self):
+        input_data = {
+            'data1': [
+                {
+                    'value': 'abc',
+                }
+            ],
+            'data2': {
+                'model_value': {
+                    'value': 'def',
+                }
+            }
+        }
+
+        uut = self.Data3(**input_data)
+
+        self.assertDictEqual(dict(uut), input_data)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
