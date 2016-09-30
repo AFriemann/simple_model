@@ -9,15 +9,17 @@
 
 """
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 
 import abc, logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 from simple_model.decorators import deprecated
 
 __logger__ = logging.getLogger(__name__)
 
-class Attribute:
+class Attribute(object):
     def __init__(self, t, optional=False, fallback=None):
         assert t is not None, "attribute type can not be None"
 
@@ -68,17 +70,18 @@ class AttributeList(Attribute):
 class Model(object):
     __metaclass__ = abc.ABCMeta
 
+    __hide_unset__ = False
+
     @deprecated('__attributes__ is deprecated, please use cast to dict instead')
     def __attributes__(self):
         return dict(self)
 
     def __iter__(self):
-        for key in dir(self):
-            if not key.startswith('_'):
-                value = getattr(self, key)
-                if isinstance(value, list): value = [ dict(v) if isinstance(v, Model) else v for v in value ]
-                if isinstance(value, Model): value = dict(value)
-                yield key, value
+        for key, value in [ (k, getattr(self, k)) for k in dir(self) if not k.startswith('_') ]:
+            if value is None and self.__hide_unset__: continue
+            if isinstance(value, list): value = [ dict(v) if isinstance(v, Model) else v for v in value ]
+            if isinstance(value, Model): value = dict(value)
+            yield key, value
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
@@ -90,6 +93,9 @@ class Model(object):
     def __init__(self, **kwargs):
         failed_values = []
         for name, attribute in dict(self).items():
+            if not ( issubclass(type(attribute), Attribute) or issubclass(type(attribute), Model) ):
+                continue
+
             value = kwargs.get(name)
             __logger__.debug('parsing attribute %s %s with value "%s"' % (name, attribute, value))
             try:
