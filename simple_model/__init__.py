@@ -9,11 +9,9 @@
 
 """
 
-__version__ = '0.1.9'
+__version__ = '0.1.9-1'
 
 import abc, logging
-
-logging.basicConfig(level=logging.DEBUG)
 
 from simple_model.decorators import deprecated
 
