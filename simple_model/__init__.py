@@ -9,7 +9,7 @@
 
 """
 
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 
 import abc, logging
 
@@ -20,10 +20,11 @@ from simple_model.decorators import deprecated
 __logger__ = logging.getLogger(__name__)
 
 class Attribute(object):
-    def __init__(self, t, optional=False, fallback=None):
+    def __init__(self, t, name=None, optional=False, fallback=None):
         assert t is not None, "attribute type can not be None"
 
         self._type = t
+        self._name = name
         self._optional = optional
         self._fallback = fallback
 
@@ -96,7 +97,11 @@ class Model(object):
             if not ( issubclass(type(attribute), Attribute) or issubclass(type(attribute), Model) ):
                 continue
 
-            value = kwargs.get(name)
+            if attribute._name is not None:
+                value = kwargs.get(attribute._name)
+            else:
+                value = kwargs.get(name)
+
             __logger__.debug('parsing attribute %s %s with value "%s"' % (name, attribute, value))
             try:
                 setattr(self, name, attribute(value))
