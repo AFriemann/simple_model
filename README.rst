@@ -16,6 +16,8 @@ Usage
 
 Examples::
 
+    >>> from pprint import pprint
+
     >>> from simple_model import Model, Attribute
 
     >>> class Data(Model):
@@ -23,24 +25,24 @@ Examples::
     ...     some_value = Attribute(str, optional=True)
     ...     another_value = Attribute(int, fallback=0)
 
-    >>> dict(Data(name = 'test', some_value = None, another_value = 12))
-    { 'name': 'test', 'some_value': None, 'another_value': 12 }
+    >>> pprint(dict(Data(name = 'test', some_value = None, another_value = 12)))
+    {'another_value': 12, 'name': 'test', 'some_value': None}
 
-    >>> dict(Data(name = 'test'))
-    { 'name': 'test', 'some_value': None, 'another_value': 0 }
+    >>> pprint(dict(Data(name = 'test')))
+    {'another_value': 0, 'name': 'test', 'some_value': None}
 
     >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
-    >>> Data(**init_dict)
-    { 'name': 'test', 'some_value': 'val', 'another_value': 3 }
+    >>> pprint(dict(Data(**init_dict)))
+    {'another_value': 3, 'name': 'test', 'some_value': 'val'}
 
 Initializing with missing attributes while not specifying them as optional or providing a fallback value
-will result in an *ValueError*.
+will result in a *ValueError*.
 Note that *fallback* takes precedence over *optional*, specifying both is unnecessary.
 
 Unknown values will be ignored::
 
-    >>> dict(Data(name = 'test', unknown_value = True))
-    { 'name': 'test', 'some_value': None, 'another_value': 0 }
+    >>> pprint(dict(Data(name = 'test', unknown_value = True)))
+    {'another_value': 0, 'name': 'test', 'some_value': None}
 
 
 Serialization can be achieved easily, for example::
@@ -62,8 +64,8 @@ given 'type', one could easily use functions instead of types to achieve more co
     >>> class Data(Model):
     ...     date = Attribute(parse_date)
 
-    >>> dict(Data('2015-11-20'))
-    { 'date': datetime.datetime(2015, 11, 20, 0, 0) }
+    >>> dict(Data(date='2015-11-20'))
+    {'date': datetime.datetime(2015, 11, 20, 0, 0)}
 
 Fallback values can also be given as functions ::
 
@@ -74,27 +76,45 @@ Fallback values can also be given as functions ::
     ...     point = Attribute(str, fallback=fun)
 
     >>> dict(Data())
-    { 'point': 'foo' }
+    {'point': 'foo'}
 
-If you need to verify Lists of objects, use the provided *AttributeList* class::
+If you need to verify Lists of objects, use functions::
 
-     >>> class Data(Model):
-     ...     point = AttributeList(str)
+    >>> class Data(Model):
+    ...     points = Attribute(lambda l: list(map(str, l)))
 
-     >>> dict(Data(point=['abc', 'def', 'ghi']))
-     { 'point': ['abc', 'def', 'ghi'] }
+    >>> dict(Data(points=['abc', 'def', 'ghi']))
+    {'points': ['abc', 'def', 'ghi']}
+
+Or the included *list_type* helper function::
+
+    >>> from simple_model import list_type
+    >>> class Data(Model):
+    ...     points = Attribute(list_type(str))
+
+    >>> dict(Data(points=['abc', 'def', 'ghi']))
+    {'points': ['abc', 'def', 'ghi']}
 
 For more complex data, use Models to verify::
 
      >>> class SubData(Model):
-     ...     some_value = AttributeList(str)
+     ...     some_value = Attribute(str)
+     ...     some_other_value = Attribute(int)
 
      >>> class Data(Model):
      ...     point = Attribute(SubData)
 
-     >>> dict(Data(point={'some_value': ['abc', 'def', 'ghi']}))
-     { 'point': ['abc', 'def', 'ghi'] }
-        
+     >>> pprint(dict(Data(point={'some_value': 'abc', 'some_other_value': 12})))
+     {'point': {'some_other_value': 12, 'some_value': 'abc'}}
+
+To allow uncommon names, use the Attribute name kwarg::
+
+    >>> class Data(Model):
+    ...     point = Attribute(str, name='@point')
+
+    >>> dict(Data(point='something'))
+    {'@point': 'something'}
+
 Tests
 -----
 
@@ -105,3 +125,11 @@ To run the tests use tox::
 Or run py.test manually (not recommended, needs simple_module installed)::
 
     $ py.test .
+
+Changelog
+---------
+
+1.0.0
+~~~~~
+* removed the AttributeList class, use functions instead.
+* Model Attributes can now be named. To allow this we keep the Attribute object and store the value.

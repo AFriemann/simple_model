@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 
-from simple_model import Model, Attribute, AttributeList
+from simple_model import Model, Attribute, list_type
 
 class ModelTestCase(unittest.TestCase):
     """Tests for the Model class"""
@@ -43,7 +43,7 @@ class ModelTestCase(unittest.TestCase):
         except Exception as e:
             self.fail('creation with missing argument failed in spite of optional/fallback set to True: ' + str(e))
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             self.uut(name = 'test')
 
     def test_model_should_allow_unknown_arguments_by_default(self):
@@ -66,11 +66,6 @@ class ModelTestCase(unittest.TestCase):
 
         self.assertNotEquals(uut1, uut3)
 
-    def test_model_should_provide_legacy_attributes_method(self):
-        uut = self.uut(name = 'test', number = 3)
-
-        self.assertEquals(uut.__attributes__(), dict(uut))
-
 class ModelCastTestCase(unittest.TestCase):
     def setUp(self):
         class Data1(Model):
@@ -78,7 +73,7 @@ class ModelCastTestCase(unittest.TestCase):
         class Data2(Model):
             model_value = Attribute(Data1)
         class Data3(Model):
-            data1 = AttributeList(Data1)
+            data1 = Attribute(list_type(str))
             data2 = Attribute(Data2)
 
         self.Data1 = Data1
