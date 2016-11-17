@@ -8,3 +8,14 @@ install:
 script:
     - py.test tests
     - py.test --doctest-module README.rst
+deploy:
+    - provider: pypi
+      distributions: sdist
+      server: https://testpypi.python.org/pypi
+      user: afriemann
+      password:
+        secure: "IoaC8nTIo4zC9/b70MZ+5PVPOQlmZaVMbWpkCliRblWOnhNFiBYwnyEymdGo72F6qOMcei2VSo+yn5OidRRWyOHceV0yPdLUr52B8hI1Zo86ScwJuJzm9dBFyU+yuJ0TOc/Bl1AXqfCR4JpwhUxWlyko5YkYB5/+IUF96+MfhiWshXXbh3nS38tMdqw+G8bREdkLQFPIC4czcMElkGs9td3usOFKjJnP/v0T+Lj3mCL2MwCjW+Xh7UE/klNHWEOV/GilkS9A4o2JDCGkGZ9b6ujEm9n1dg8cCB48+T9v7gEjWvDltmY6gOH7t1FmjhcQMNlobQg16nu+2+Mn2ZtekLQR2oHD2a71sfYy7/hHKZ3NqmHAAoDsL695G5XPdg2Ewq60F7oYK4nhRIEWkOZyO4PHPuUijvskeeK19I5mqqNItvE33sG5tupoE3M6egqA4Me9/eiIfQwQdUsMeIJzaJZvUfRCfzv2lQgLUHDWqMo8dKmAHZNxuMB69UH1hsI809/F9/zeU13dAn03DxOebLwZ8IBcEBP0W/q7oWH0Xo1Mxk/M2AszJJh5y6Yty+BjZOItgIJWYjhLCzl8hrCgwnOdP8QZkSWPICQjul69jWSe9YOxK5XBtVID/JH7U5xeP6PxtkhYZnrZuBrpiXE599JYM74CQhxSFyaURDo7OaI="
+      on:
+        branch: master
+        tags: true
+        condition: $TRAVIS_PYTHON_VERSION = "3.4"
