@@ -121,6 +121,10 @@ To allow uncommon names, use the Attribute name kwarg::
     >>> dict(Data(point='something'))
     {'@point': 'something'}
 
+    >>> dict(Data(**{ '@point': 'something' }))
+    {'@point': 'something'}
+
+
 Tests
 -----
 
