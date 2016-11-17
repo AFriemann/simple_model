@@ -1,6 +1,9 @@
 simple_model
 ============
 
+.. image:: https://travis-ci.org/AFriemann/simple_model.svg?branch=persistent-attributes
+    :target: https://travis-ci.org/AFriemann/simple_model
+
 As the name says, this is a very simple model framework. It can be used for data
 validation and (de-)serialization.
 
