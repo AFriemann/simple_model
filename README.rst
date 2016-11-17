@@ -17,9 +17,12 @@ Install with pip::
 Usage
 -----
 
-Examples::
+This allows me to test the examples by taking care of sorting the dictionaries, it is not required for simple_model
+to work::
 
     >>> from pprint import pprint
+
+Examples::
 
     >>> from simple_model import Model, Attribute
 
