@@ -15,10 +15,21 @@ import abc, logging, copy
 
 from simple_model.decorators import deprecated
 
-def list_type(t):
-    def parse(l):
-        return [ t(v) for v in l ]
-    return parse
+class list_type():
+    def __init__(self, t):
+        self.__type__ = t
+
+    def __call__(self, lst):
+        if issubclass(self.__type__, Model):
+            return [ self.__type__(**e) for e in lst ]
+        else:
+            return [ self.__type__(e) for e in lst ]
+
+    def __repr__(self):
+        return str({ 'list_type': self.__type__ })
+
+    def __str__(self):
+        return self.__repr__()
 
 class Attribute(object):
     __type__     = None
@@ -75,7 +86,7 @@ class Attribute(object):
         else:
             try:
                 self.__value__ = self.__type__(**value)
-            except:
+            except TypeError:
                 self.__value__ = self.__type__(value)
 
 class Model(object):
@@ -89,7 +100,7 @@ class Model(object):
                 value = object.__getattribute__(self, key)
 
                 if issubclass(type(value), Attribute):
-                    yield key, value
+                    yield key, copy.deepcopy(value)
 
     def __iter__(self):
         for key, attribute in self.attributes:
@@ -119,14 +130,15 @@ class Model(object):
 
         for key, attribute in self.attributes:
             name = attribute.name or key
-            value = kwargs.get(name)
+            value = kwargs.get(name) or kwargs.get(key)
 
             logger.debug('parsing attribute {0} {1} with value "{2}"'.format(name, attribute, value))
 
             try:
-                setattr(self, key, copy.deepcopy(object.__getattribute__(self, key))(value))
+                setattr(self, key, attribute(value))
             except Exception as e:
                 logger.warning('failed to parse value "{0}" with {1}'.format(value, attribute))
+                raise e
 
                 failed_values.append(
                     {

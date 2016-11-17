@@ -73,7 +73,7 @@ class ModelCastTestCase(unittest.TestCase):
         class Data2(Model):
             model_value = Attribute(Data1)
         class Data3(Model):
-            data1 = Attribute(list_type(str))
+            data1 = Attribute(list_type(Data1))
             data2 = Attribute(Data2)
 
         self.Data1 = Data1
