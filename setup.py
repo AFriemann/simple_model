@@ -23,21 +23,18 @@ install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.downlo
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
 
-from simple_model import __version__
-
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
       author_email     = "aljosha.friemann@gmail.com",
       description      = "very simple model framework",
       url              = "https://www.github.com/afriemann/simple_model.git",
       keywords         = ['model','serialization','validation'],
-      version          = __version__,
+      version          = '1.0.0',
       license          = read('LICENSE.txt'),
       long_description = read('README.rst'),
       install_requires = requirements,
       classifiers      = [],
       packages         = ["simple_model"],
-      package_data     = { 'simple_model': ['VERSION'] },
       platforms        = 'linux'
 )
 

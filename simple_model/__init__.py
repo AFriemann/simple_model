@@ -9,8 +9,6 @@
 
 """
 
-__version__ = '0.1.9-1'
-
 import abc, logging, copy
 
 from simple_model.decorators import deprecated
