@@ -23,14 +23,22 @@ def read(fname):
 def sh(*args):
     return Popen(args, stdout=PIPE).communicate()[0].strip().decode()
 
+def current_commit():
+    return sh('git', 'rev-parse', '--short', 'HEAD')
+
+def last_git_tag():
+    return sh('git', 'describe', '--abbrev=0', '--tags')
+
+def git_tag_for(commit):
+    return sh('git', 'tag', '--points-at', commit)
+
 def git_version():
-    commit = sh('git', 'rev-parse', '--short', 'HEAD')
-    tag = sh('git', 'tag', '--contains', commit)
+    commit = current_commit()
+    tag = git_tag_for(commit)
 
     if not tag:
         # this is not PEP440 compatible
-        last_tag = sh('git', 'describe', '--abbrev=0', '--tags')
-        return '{0}-{1}'.format(last_tag, commit)
+        return '{0}.post{1}'.format(last_git_tag(), commit)
 
     return tag
 
