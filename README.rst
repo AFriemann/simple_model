@@ -6,7 +6,7 @@ simple_model
 .. image:: https://badge.fury.io/py/simple_model.svg
     :target: https://badge.fury.io/py/simple_model
 
-As the name says, this is a very simple model framework. It can be used for data
+As the name suggests, this is a very simple model framework. It can be used for data
 validation and (de-)serialization.
 
 Installation
