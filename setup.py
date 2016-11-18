@@ -10,6 +10,7 @@
 """
 
 import os, pip
+from subprocess import Popen, PIPE
 
 try:
     from setuptools import setup
@@ -19,11 +20,23 @@ except ImportError:
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname), 'r').read()
 
+def sh(*args):
+    return Popen(args, stdout=PIPE).communicate()[0].strip().decode()
+
+def get_last_tag():
+    return sh('git', 'describe', '--abbrev=0', '--tags')
+
+def git_version():
+    commit = sh('git', 'rev-parse', '--short', 'HEAD')
+    tag = sh('git', 'tag', '--contains', commit)
+
+    return tag or '{0}-{1}'.format(get_last_tag(), commit)
+
 install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
 
-version = '1.0.0'
+version = git_version()
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
