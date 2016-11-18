@@ -94,7 +94,7 @@ If you need to verify Lists of objects, use functions::
     >>> dict(Data(points=['abc', 'def', 'ghi']))
     {'points': ['abc', 'def', 'ghi']}
 
-Or the included *list_type* helper function::
+Or the included *list_type* helper class::
 
     >>> from simple_model import list_type
     >>> class Data(Model):
