@@ -11,16 +11,6 @@ script:
 deploy:
     - provider: pypi
       distributions: sdist
-      server: https://testpypi.python.org/pypi
-      user: afriemann
-      password:
-        secure: "IoaC8nTIo4zC9/b70MZ+5PVPOQlmZaVMbWpkCliRblWOnhNFiBYwnyEymdGo72F6qOMcei2VSo+yn5OidRRWyOHceV0yPdLUr52B8hI1Zo86ScwJuJzm9dBFyU+yuJ0TOc/Bl1AXqfCR4JpwhUxWlyko5YkYB5/+IUF96+MfhiWshXXbh3nS38tMdqw+G8bREdkLQFPIC4czcMElkGs9td3usOFKjJnP/v0T+Lj3mCL2MwCjW+Xh7UE/klNHWEOV/GilkS9A4o2JDCGkGZ9b6ujEm9n1dg8cCB48+T9v7gEjWvDltmY6gOH7t1FmjhcQMNlobQg16nu+2+Mn2ZtekLQR2oHD2a71sfYy7/hHKZ3NqmHAAoDsL695G5XPdg2Ewq60F7oYK4nhRIEWkOZyO4PHPuUijvskeeK19I5mqqNItvE33sG5tupoE3M6egqA4Me9/eiIfQwQdUsMeIJzaJZvUfRCfzv2lQgLUHDWqMo8dKmAHZNxuMB69UH1hsI809/F9/zeU13dAn03DxOebLwZ8IBcEBP0W/q7oWH0Xo1Mxk/M2AszJJh5y6Yty+BjZOItgIJWYjhLCzl8hrCgwnOdP8QZkSWPICQjul69jWSe9YOxK5XBtVID/JH7U5xeP6PxtkhYZnrZuBrpiXE599JYM74CQhxSFyaURDo7OaI="
-      on:
-        branch: master
-        tags: false
-        condition: $TRAVIS_PYTHON_VERSION = "3.4"
-    - provider: pypi
-      distributions: sdist
       user: afriemann
       password:
         secure: "Mv/AM9A+nBXlLVOLFLiZcRsGTU53XKCg1ZB7NnMDflygaHUNrZPUedLaFDEqBZHQ/9R04D3BTacp7L6xyuvc47THfMiVR7PTAp+ZndXDFLiZJ5PGProhpuvtNBveS1R90gTGR5gqwNqTd5s3BTcndJteopkjYcanfoV17jmY0v5wU/y6+GuN03U6WFy7FGAQyr7taE1X74mcQyu3xBv3jWP6dFs3JdK+DlIZxx5HastKtlER9L0yRBiKM4nNJqUBgb9Tpaw1fJnjPYpZIDQr6qCuA2xLuuZ9j/fU+HGAaKOAloJfWsc6KTAq0B1BDAOnj03IPmp4AowthaSxJOilvTCvccaciO5R6e3mMYwARelpSbFbDFE8knOHCvQrxGUBDSZUsqt3prXP33r5hZ646TmEM+NNZLGDUnZvaF+2FiXEQFlmLz+1GH10h02rtPjINZlJ1QGn9bCs17R0oFeHCPXg9XG4BsmOdy1ovNh3IsuPPUW3MWTGAkmZfR0ydZLo/5y6WFyOfYg515EP2TsQXi1YQIVGc2CjcqAd/Uv8AhAXckFyjBNONDFczgBBFh5sq0hORzIsM1wXQx5nKD/keQaPDpOp6Z47Jyppd9eyKX6lhPGHVf1GoQYLg6GoYADTj+X17JvDLP5PqvpbSOpKMOwB39TUiF1P3AkNrKvLcyc="

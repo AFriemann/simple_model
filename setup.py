@@ -23,14 +23,16 @@ def read(fname):
 def sh(*args):
     return Popen(args, stdout=PIPE).communicate()[0].strip().decode()
 
-def get_last_tag():
-    return sh('git', 'describe', '--abbrev=0', '--tags')
-
 def git_version():
     commit = sh('git', 'rev-parse', '--short', 'HEAD')
     tag = sh('git', 'tag', '--contains', commit)
 
-    return tag or '{0}-{1}'.format(get_last_tag(), commit)
+    if not tag:
+        # this is not PEP440 compatible
+        last_tag = sh('git', 'describe', '--abbrev=0', '--tags')
+        return '{0}-{1}'.format(last_tag, commit)
+
+    return tag
 
 install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
 
