@@ -1,7 +1,7 @@
 simple_model
 ============
 
-.. image:: https://travis-ci.org/AFriemann/simple_model.svg?branch=persistent-attributes
+.. image:: https://travis-ci.org/AFriemann/simple_model.svg?branch=master
     :target: https://travis-ci.org/AFriemann/simple_model
 .. image:: https://badge.fury.io/py/simple_model.svg
     :target: https://badge.fury.io/py/simple_model
