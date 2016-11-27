@@ -136,7 +136,6 @@ class Model(object):
                 setattr(self, key, attribute(value))
             except Exception as e:
                 logger.warning('failed to parse value "{0}" with {1}'.format(value, attribute))
-                raise e
 
                 failed_values.append(
                     {
