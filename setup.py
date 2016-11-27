@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 .. module:: TODO
@@ -17,6 +16,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
+from simple_model import __version__
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname), 'r').read()
 
@@ -26,36 +27,30 @@ def sh(*args):
 def current_commit():
     return sh('git', 'rev-parse', '--short', 'HEAD')
 
-def last_git_tag():
-    return sh('git', 'describe', '--abbrev=0', '--tags')
-
 def git_tag_for(commit):
     return sh('git', 'tag', '--points-at', commit)
 
-def git_version():
+def check_version_against_tag():
     commit = current_commit()
     tag = git_tag_for(commit)
 
-    if not tag:
-        # this is not PEP440 compatible
-        return '{0}.post{1}'.format(last_git_tag(), commit)
-
-    return tag
+    if tag and tag != __version__:
+        raise Exception('internal version {} is not equal to deployed version {}'.format(__version__, tag))
 
 install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
 
-version = git_version()
+check_version_against_tag()
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
       author_email     = "aljosha.friemann@gmail.com",
       description      = "very simple model framework",
       url              = "https://www.github.com/afriemann/simple_model.git",
-      download_url     = "https://github.com/AFriemann/simple_model/archive/{}.tar.gz".format(version),
+      download_url     = "https://github.com/AFriemann/simple_model/archive/{}.tar.gz".format(__version__),
       keywords         = ['model','serialization','validation'],
-      version          = version,
+      version          = __version__,
       license          = read('LICENSE.txt'),
       long_description = read('README.rst'),
       install_requires = requirements,

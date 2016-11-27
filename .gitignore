@@ -1,7 +1,9 @@
 *.pyc
 
+reports
 sdist
 dist
 .tox
 .cache
+.coverage
 *.egg-info
