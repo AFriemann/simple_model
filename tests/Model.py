@@ -10,7 +10,6 @@
 """
 
 import logging
-
 logging.basicConfig(level=logging.DEBUG)
 
 import unittest
@@ -65,6 +64,25 @@ class ModelTestCase(unittest.TestCase):
         uut3 = self.uut(name = 'test', number = 1)
 
         self.assertNotEquals(uut1, uut3)
+
+    def test_model_should_ignore_non_attributes(self):
+        class Foo(Model):
+            non_attribute = 'bar'
+            attribute = Attribute(str)
+
+        result = Foo(attribute='bar')
+
+        self.assertEqual(result.attribute, 'bar')
+        self.assertEqual(result.non_attribute, 'bar')
+
+    def test_model_should_hide_unset_if_wanted(self):
+        class Foo(Model):
+            __hide_unset__ = True
+            optional_attribute = Attribute(str, optional=True)
+
+        result = Foo()
+
+        self.assertEqual(dict(result), {})
 
 class ModelCastTestCase(unittest.TestCase):
     def setUp(self):

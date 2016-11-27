@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 
-from simple_model import Attribute
+from simple_model import Attribute, list_type
 
 class AttributeTestCase(unittest.TestCase):
     """Tests for the Attribute class"""
@@ -62,5 +62,9 @@ class AttributeTestCase(unittest.TestCase):
     def test_named_attributes(self):
         uut = Attribute(str, name='@foobar')
         self.assertEqual(uut('def').name, '@foobar')
+
+    def test_attribute_should_raise_when_type_is_none(self):
+        with self.assertRaises(ValueError):
+            Attribute(None)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
