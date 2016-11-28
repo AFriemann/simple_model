@@ -44,7 +44,7 @@ Examples::
     {'another_value': 3, 'name': 'test', 'some_value': 'val'}
 
 Initializing with missing attributes while not specifying them as optional or providing a fallback value
-will result in a *ValueError*.
+will result in a *ValueError* containing all failed attributes.
 Note that *fallback* takes precedence over *optional*, specifying both is unnecessary.
 
 Unknown values will be ignored::

@@ -132,4 +132,16 @@ class ModelCastTestCase(unittest.TestCase):
 
         self.assertDictEqual(dict(uut), input_data)
 
+    def test_model_should_collect_all_errors_before_raising(self):
+        class Foo(Model):
+            a = Attribute(int)
+            b = Attribute(str)
+            c = Attribute(bool)
+
+        try:
+            Foo(a='abc')
+            assert False, 'initialization did not raise an Exceptin'
+        except ValueError as e:
+            self.assertEqual(len(e.args), 3)
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
