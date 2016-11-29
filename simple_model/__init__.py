@@ -34,16 +34,18 @@ class list_type():
 class Attribute(object):
     __type__     = None
     __name__     = None
+    __alias__    = None
     __default__  = None
     __value__    = None
     __optional__ = False
 
-    def __init__(self, t, name=None, optional=False, fallback=None):
+    def __init__(self, t, name=None, alias=None, optional=False, fallback=None):
         if t is None:
             raise ValueError('attribute type can not be None')
 
         self.__type__     = t
         self.__name__     = name
+        self.__alias__    = alias
         self.__default__  = fallback
         self.__optional__ = optional
 
@@ -53,6 +55,7 @@ class Attribute(object):
         yield 'type', self.__type__
         yield 'default', self.__default__
         yield 'optional', self.__optional__
+        yield 'alias', self.__alias__
 
     def __str__(self):
         return str(dict(self))
@@ -60,6 +63,10 @@ class Attribute(object):
     def __call__(self, value):
         self.value = value
         return self
+
+    @property
+    def alias(self):
+        return self.__alias__
 
     @property
     def name(self):
@@ -130,7 +137,7 @@ class Model(object):
 
         for key, attribute in self.attributes:
             name = attribute.name or key
-            value = kwargs.get(name) or kwargs.get(key)
+            value = kwargs.get(name) or kwargs.get(key) or kwargs.get(attribute.alias)
 
             logger.debug('parsing attribute {0} {1} with value "{2}"'.format(name, attribute, value))
 

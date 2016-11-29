@@ -140,8 +140,16 @@ class ModelCastTestCase(unittest.TestCase):
 
         try:
             Foo(a='abc')
-            assert False, 'initialization did not raise an Exceptin'
+            assert False, 'initialization did not raise an Exception'
         except ValueError as e:
             self.assertEqual(len(e.args), 3)
+
+    def test_model_should_find_attribute_value_by_alias(self):
+        class Foo(Model):
+            a = Attribute(str, alias='b')
+
+        result = Foo(b='bar')
+
+        self.assertDictEqual(dict(result), {'a': 'bar'})
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
