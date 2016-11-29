@@ -144,6 +144,7 @@ Changelog
 1.0.1
 ~~~~~
 * Model will now raise ValueError for failed attributes with a list instead of a string.
+* Attributes now allow an alias as keyword argument.
 
 1.0.0
 ~~~~~
