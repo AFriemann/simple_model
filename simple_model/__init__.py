@@ -149,7 +149,7 @@ class Model(object):
                 )
 
         if len(failed_values) != 0:
-            raise ValueError("failed to parse data: {}".format(failed_values))
+            raise ValueError(*failed_values)
 
     def __repr__(self):
         return str(dict(self))
