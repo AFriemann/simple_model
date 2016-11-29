@@ -141,6 +141,10 @@ Or run py.test manually (not recommended, needs simple_module installed)::
 Changelog
 ---------
 
+1.0.1
+~~~~~
+* Model will now raise ValueError for failed attributes with a list instead of a string.
+
 1.0.0
 ~~~~~
 * removed the AttributeList class, use functions instead.
