@@ -8,7 +8,7 @@
 
 """
 
-import os, pip
+import os, pip, sys
 from subprocess import Popen, PIPE
 
 try:
@@ -41,7 +41,8 @@ install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.downlo
 
 requirements = [str(ir.req) for ir in install_reqs if ir is not None]
 
-check_version_against_tag()
+if 'upload' in sys.argv or 'register' in sys.argv:
+    check_version_against_tag()
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",

@@ -13,7 +13,7 @@ import abc, logging, copy
 
 from simple_model.decorators import deprecated
 
-__version__ = '1.0.1'
+__version__ = '1.0.1.post1'
 
 class list_type():
     def __init__(self, t):
