@@ -150,8 +150,16 @@ To run the tests use tox::
 Or run py.test manually (not recommended, needs simple_module installed)::
 
     $ py.test .
+    
+Issues
+------
+
+Please submit any issues on `GitHub`_.
 
 Changelog
 ---------
 
-:doc:`CHANGELOG.rst`
+see `CHANGELOG`_
+
+.. _CHANGELOG: CHANGELOG.rst
+.. _GitHub: https://github.com/afriemann/simple_model/issues
