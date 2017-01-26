@@ -10,7 +10,8 @@
 
 import unittest
 
-from simple_model import list_type, Model, Attribute
+from simple_model import Model, Attribute
+from simple_model.helpers import list_type
 
 class ListTypeTestCase(unittest.TestCase):
     def test_with_simple_types(self):

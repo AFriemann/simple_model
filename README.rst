@@ -96,7 +96,7 @@ If you need to verify Lists of objects, use functions::
 
 Or the included *list_type* helper class::
 
-    >>> from simple_model import list_type
+    >>> from simple_model.helpers import list_type
     >>> class Data(Model):
     ...     points = Attribute(list_type(str))
 
@@ -126,6 +126,19 @@ To allow uncommon names, use the Attribute name kwarg::
     >>> dict(Data(**{ '@point': 'something' }))
     {'@point': 'something'}
 
+To easily check against expected values you can use the helper function *one_of*::
+
+    >>> from simple_model.helpers import one_of
+    >>> class Data(Model):
+    ...     foo = Attribute(one_of('bar', 'foobar'))
+
+    >>> dict(Data(foo='bar'))
+    {'foo': 'bar'}
+
+    >>> dict(Data(foo='foo')) # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    ValueError: {...'exception': "ValueError: must be one of ('bar', 'foobar') but was foo"...}
 
 Tests
 -----

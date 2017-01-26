@@ -11,25 +11,7 @@
 
 import abc, logging, copy
 
-from simple_model.decorators import deprecated
-
-__version__ = '1.0.1.post1'
-
-class list_type():
-    def __init__(self, t):
-        self.__type__ = t
-
-    def __call__(self, lst):
-        if issubclass(self.__type__, Model):
-            return [ self.__type__(**e) for e in lst ]
-        else:
-            return [ self.__type__(e) for e in lst ]
-
-    def __repr__(self):
-        return str({ 'list_type': self.__type__ })
-
-    def __str__(self):
-        return self.__repr__()
+__version__ = '1.0.2'
 
 class Attribute(object):
     __type__     = None

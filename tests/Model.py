@@ -14,7 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 
-from simple_model import Model, Attribute, list_type
+from simple_model import Model, Attribute
+from simple_model.helpers import list_type
 
 class ModelTestCase(unittest.TestCase):
     """Tests for the Model class"""
