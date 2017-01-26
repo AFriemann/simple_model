@@ -160,7 +160,7 @@ To easily check against expected values you can use the helper function *one_of*
     >>> dict(Data(foo='foo')) # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ValueError: {...'exception': "ValueError: must be one of ('bar', 'foobar') but was foo"...}
+    ValueError: {...'exception': "ValueError: must be one of ('bar', 'foobar') but was 'foo'"...}
 
 Tests
 -----

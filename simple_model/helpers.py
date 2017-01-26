@@ -29,7 +29,7 @@ class list_type():
 def one_of(*args):
     def f(value):
         if value not in args:
-            raise ValueError('must be one of {} but was {}'.format(args, value))
+            raise ValueError('must be one of {} but was \'{}\''.format(args, value))
         return value
     return f
 
