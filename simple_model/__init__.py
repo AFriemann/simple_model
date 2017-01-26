@@ -153,4 +153,6 @@ class Model(object):
         else:
             return attr
 
+from simple_model.helpers import list_type
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
