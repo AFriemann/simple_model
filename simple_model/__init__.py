@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-.. module:: TODO
+.. module:: simple_model
    :platform: Unix
-   :synopsis: TODO.
+   :synopsis: Simple models for easy data (de-)serialization and validation.
 
-.. moduleauthor:: Aljosha Friemann aljosha.friemann@gmail.com
+.. moduleauthor:: Aljosha Friemann a.friemann@automate.wtf
 
 """
 

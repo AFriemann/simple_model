@@ -115,7 +115,7 @@ For more complex data, use Models to verify::
      >>> pprint(dict(Data(point={'some_value': 'abc', 'some_other_value': 12})))
      {'point': {'some_other_value': 12, 'some_value': 'abc'}}
 
-To allow uncommon names, use the Attribute name kwarg::
+To allow uncommon names, use the Attribute name keyword::
 
     >>> class Data(Model):
     ...     point = Attribute(str, name='@point')
@@ -154,12 +154,4 @@ Or run py.test manually (not recommended, needs simple_module installed)::
 Changelog
 ---------
 
-1.0.1
-~~~~~
-* Model will now raise ValueError for failed attributes with a list instead of a string.
-* Attributes now allow an alias as keyword argument.
-
-1.0.0
-~~~~~
-* removed the AttributeList class, use functions instead.
-* Model Attributes can now be named. To allow this we keep the Attribute object and store the value.
+:doc:`CHANGELOG.rst`

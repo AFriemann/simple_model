@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: TODO
+.. module:: simple_model.helpers
    :platform: Unix
-   :synopsis: TODO.
+   :synopsis: Helper functions and classes for simple_model.
 
 .. moduleauthor:: Aljosha Friemann a.friemann@automate.wtf
 
