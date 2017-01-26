@@ -20,11 +20,15 @@ Usage
 -----
 
 This allows me to test the examples by taking care of sorting the dictionaries, it is not required for simple_model
-to work::
+to work:
+
+.. code:: python
 
     >>> from pprint import pprint
 
-Examples::
+Examples:
+
+.. code:: python
 
     >>> from simple_model import Model, Attribute
 
@@ -49,11 +53,15 @@ Note that *fallback* takes precedence over *optional*, specifying both is unnece
 
 Unknown values will be ignored::
 
+.. code:: python
+
     >>> pprint(dict(Data(name = 'test', unknown_value = True)))
     {'another_value': 0, 'name': 'test', 'some_value': None}
 
 
 Serialization can be achieved easily, for example::
+
+.. code:: python
 
     >>> import json
     >>> def serialize(model):
@@ -64,6 +72,8 @@ Serialization can be achieved easily, for example::
 
 Since the Model class simply calls the Attribute class for each parameter and the Attribute class in turn calls the
 given 'type', one could easily use functions instead of types to achieve more complex results and value parsing::
+
+.. code:: python
 
     >>> from datetime import datetime
     >>> def parse_date(string):
@@ -77,6 +87,8 @@ given 'type', one could easily use functions instead of types to achieve more co
 
 Fallback values can also be given as functions ::
 
+.. code:: python
+
     >>> def fun():
     ...     return "foo"
 
@@ -88,6 +100,8 @@ Fallback values can also be given as functions ::
 
 If you need to verify Lists of objects, use functions::
 
+.. code:: python
+
     >>> class Data(Model):
     ...     points = Attribute(lambda l: list(map(str, l)))
 
@@ -95,6 +109,8 @@ If you need to verify Lists of objects, use functions::
     {'points': ['abc', 'def', 'ghi']}
 
 Or the included *list_type* helper class::
+
+.. code:: python
 
     >>> from simple_model.helpers import list_type
     >>> class Data(Model):
@@ -104,6 +120,8 @@ Or the included *list_type* helper class::
     {'points': ['abc', 'def', 'ghi']}
 
 For more complex data, use Models to verify::
+
+.. code:: python
 
      >>> class SubData(Model):
      ...     some_value = Attribute(str)
@@ -117,6 +135,8 @@ For more complex data, use Models to verify::
 
 To allow uncommon names, use the Attribute name keyword::
 
+.. code:: python
+
     >>> class Data(Model):
     ...     point = Attribute(str, name='@point')
 
@@ -127,6 +147,8 @@ To allow uncommon names, use the Attribute name keyword::
     {'@point': 'something'}
 
 To easily check against expected values you can use the helper function *one_of*::
+
+.. code:: python
 
     >>> from simple_model.helpers import one_of
     >>> class Data(Model):
