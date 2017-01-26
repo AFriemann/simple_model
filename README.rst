@@ -51,7 +51,7 @@ Initializing with missing attributes while not specifying them as optional or pr
 will result in a *ValueError* containing all failed attributes.
 Note that *fallback* takes precedence over *optional*, specifying both is unnecessary.
 
-Unknown values will be ignored::
+Unknown values will be ignored
 
 .. code:: python
 
@@ -59,7 +59,7 @@ Unknown values will be ignored::
     {'another_value': 0, 'name': 'test', 'some_value': None}
 
 
-Serialization can be achieved easily, for example::
+Serialization can be achieved easily, for example
 
 .. code:: python
 
@@ -71,7 +71,7 @@ Serialization can be achieved easily, for example::
     ...     return Data(**json.loads(string))
 
 Since the Model class simply calls the Attribute class for each parameter and the Attribute class in turn calls the
-given 'type', one could easily use functions instead of types to achieve more complex results and value parsing::
+given 'type', one could easily use functions instead of types to achieve more complex results and value parsing
 
 .. code:: python
 
@@ -85,7 +85,7 @@ given 'type', one could easily use functions instead of types to achieve more co
     >>> dict(Data(date='2015-11-20'))
     {'date': datetime.datetime(2015, 11, 20, 0, 0)}
 
-Fallback values can also be given as functions ::
+Fallback values can also be given as functions
 
 .. code:: python
 
@@ -98,7 +98,7 @@ Fallback values can also be given as functions ::
     >>> dict(Data())
     {'point': 'foo'}
 
-If you need to verify Lists of objects, use functions::
+If you need to verify Lists of objects, use functions
 
 .. code:: python
 
@@ -108,7 +108,7 @@ If you need to verify Lists of objects, use functions::
     >>> dict(Data(points=['abc', 'def', 'ghi']))
     {'points': ['abc', 'def', 'ghi']}
 
-Or the included *list_type* helper class::
+Or the included *list_type* helper class
 
 .. code:: python
 
@@ -119,7 +119,7 @@ Or the included *list_type* helper class::
     >>> dict(Data(points=['abc', 'def', 'ghi']))
     {'points': ['abc', 'def', 'ghi']}
 
-For more complex data, use Models to verify::
+For more complex data, use Models to verify
 
 .. code:: python
 
@@ -133,7 +133,7 @@ For more complex data, use Models to verify::
      >>> pprint(dict(Data(point={'some_value': 'abc', 'some_other_value': 12})))
      {'point': {'some_other_value': 12, 'some_value': 'abc'}}
 
-To allow uncommon names, use the Attribute name keyword::
+To allow uncommon names, use the Attribute name keyword
 
 .. code:: python
 
@@ -146,7 +146,7 @@ To allow uncommon names, use the Attribute name keyword::
     >>> dict(Data(**{ '@point': 'something' }))
     {'@point': 'something'}
 
-To easily check against expected values you can use the helper function *one_of*::
+To easily check against expected values you can use the helper function *one_of*
 
 .. code:: python
 
