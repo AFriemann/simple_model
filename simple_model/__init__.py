@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 class Attribute(object):
     __type__     = None
@@ -127,7 +127,7 @@ class Model(object):
 
         for key, attribute in self.attributes:
             name = attribute.name or key
-            value = kwargs.get(name) or kwargs.get(key) or kwargs.get(attribute.alias)
+            value = kwargs.get(name, kwargs.get(key, kwargs.get(attribute.alias)))
 
             logger.debug('parsing attribute {0} {1} with value "{2}"'.format(name, attribute, value))
 

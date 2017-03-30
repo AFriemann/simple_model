@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.1
+-----
+* fixed problem with falsy attribute values
+
+1.1.0
+-----
+* can now disallow unkown fields
+
 1.0.2
 -----
 * moved list_type class to helpers module
