@@ -162,6 +162,21 @@ To easily check against expected values you can use the helper function *one_of*
         ...
     ValueError: {...'exception': "ValueError: must be one of ('bar', 'foobar') but was 'foo'"...}
 
+If you want to disallow unknown values, set the __ignore_unknown__ attribute to False
+
+.. code:: python
+
+    >>> class Data(Model):
+    ...     __ignore_unknown__ = False
+    ...
+    ...     point = Attribute(str)
+
+    >>> Data(point = 'abc', other = 'def')
+    Traceback (most recent call last):
+        ...
+    ValueError: Unknown key "other" with value "def"
+
+
 Tests
 -----
 

@@ -85,6 +85,17 @@ class ModelTestCase(unittest.TestCase):
 
         self.assertEqual(dict(result), {})
 
+    def test_model_should_raise_if_unknown_disallowed(self):
+        class Foo(Model):
+            __ignore_unknown__ = False
+
+            data = Attribute(str)
+
+        Foo(data = 'abc')
+
+        with self.assertRaises(ValueError):
+            Foo(data = 'abc', blub = 1)
+
 class ModelCastTestCase(unittest.TestCase):
     def setUp(self):
         class Data1(Model):

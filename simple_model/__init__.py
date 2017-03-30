@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '1.0.2'
+__version__ = '1.1.0'
 
 class Attribute(object):
     __type__     = None
@@ -80,7 +80,9 @@ class Attribute(object):
 
 class Model(object):
     __metaclass__  = abc.ABCMeta
-    __hide_unset__ = False
+
+    __hide_unset__     = False
+    __ignore_unknown__ = True
 
     @property
     def attributes(self):
@@ -105,6 +107,12 @@ class Model(object):
                 value = attribute.value
 
             yield name, value
+
+    def __contains__(self, item):
+        for key, _ in self.attributes:
+            if key == item:
+                return True
+        return False
 
     def __eq__(self, other):
         return (isinstance(other, self.__class__) and dict(self) == dict(other))
@@ -136,6 +144,12 @@ class Model(object):
                         'exception': '{0}: {1}'.format(e.__class__.__name__, str(e))
                     }
                 )
+
+        if not self.__ignore_unknown__:
+            failed_values.extend([
+                'Unknown key "{}" with value "{}"'.format(key, value)
+                for key, value in kwargs.items() if key not in self
+            ])
 
         if len(failed_values) != 0:
             raise ValueError(*failed_values)
