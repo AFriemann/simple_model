@@ -176,6 +176,24 @@ If you want to disallow unknown values, set the __ignore_unknown__ attribute to 
         ...
     ValueError: Unknown key "other" with value "def"
 
+You can now set Models to be mutable and change Attribute values after creation
+
+.. code:: python
+
+    >>> class Data(Model):
+    ...     point = Attribute(int)
+
+    >>> d = Data(point = 1)
+    >>> d.point
+    1
+    >>> d.point = 2
+    >>> d.point
+    2
+    >>> d.__mutable__ = False
+    >>> d.point = 3
+    Traceback (most recent call last):
+        ...
+    AttributeError: Model is immutable
 
 Tests
 -----
@@ -187,7 +205,7 @@ To run the tests use tox::
 Or run py.test manually (not recommended, needs simple_module installed)::
 
     $ py.test .
-    
+
 Issues
 ------
 

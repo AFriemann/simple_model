@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 class Attribute(object):
     __type__     = None
@@ -38,6 +38,7 @@ class Attribute(object):
         yield 'default', self.__default__
         yield 'optional', self.__optional__
         yield 'alias', self.__alias__
+        yield 'value', self.__value__
 
     def __str__(self):
         return str(dict(self))
@@ -83,6 +84,7 @@ class Model(object):
 
     __hide_unset__     = False
     __ignore_unknown__ = True
+    __mutable__        = True
 
     @property
     def attributes(self):
@@ -129,12 +131,13 @@ class Model(object):
             name = attribute.name or key
             value = kwargs.get(name, kwargs.get(key, kwargs.get(attribute.alias)))
 
-            logger.debug('parsing attribute {0} {1} with value "{2}"'.format(name, attribute, value))
+            logger.debug('[{}] parsing attribute {} with value "{}"'.format(name, attribute, value))
 
             try:
-                setattr(self, key, attribute(value))
+                attribute.value = value
+                object.__setattr__(self, key, attribute)
             except Exception as e:
-                logger.warning('failed to parse value "{0}" with {1}'.format(value, attribute))
+                logger.warning('[{}] failed to parse value "{}" with {}'.format(name, value, attribute))
 
                 failed_values.append(
                     {
@@ -166,6 +169,15 @@ class Model(object):
             return attr.value
         else:
             return attr
+
+    def __setattr__(self, name, value):
+        attr = object.__getattribute__(self, name)
+        if issubclass(type(attr), Attribute):
+            if not self.__mutable__: raise AttributeError('Model is immutable')
+            attr.value = value
+            object.__setattr__(self, name, attr)
+        else:
+            object.__setattr__(self, name, value)
 
 from simple_model.helpers import list_type
 

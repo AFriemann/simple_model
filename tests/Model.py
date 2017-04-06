@@ -164,4 +164,19 @@ class ModelCastTestCase(unittest.TestCase):
 
         self.assertDictEqual(dict(result), {'a': 'bar'})
 
+    def test_model_mutability(self):
+        class Foo(Model):
+            a = Attribute(str)
+
+        result = Foo(a='b')
+        self.assertEqual(result.a, 'b')
+
+        result.a = 'c'
+        self.assertEqual(result.a, 'c')
+
+        result.__mutable__ = False
+
+        with self.assertRaises(AttributeError):
+            result.a = 'd'
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

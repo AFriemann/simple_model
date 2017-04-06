@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1.2
+-----
+* can now change model attributes correctly after initialization
+* added Model class attribute __mutable__ to allow locking Attributes
+
 1.1.1
 -----
 * fixed problem with falsy attribute values
