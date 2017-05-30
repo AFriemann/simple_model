@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.1.3
+-----
+* changed Model logger so simple_model logs can be turned off easily
+
 1.1.2
 -----
 * can now change model attributes correctly after initialization

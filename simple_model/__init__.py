@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 class Attribute(object):
     __type__     = None
@@ -123,7 +123,7 @@ class Model(object):
         return not self.__eq__(other)
 
     def __init__(self, **kwargs):
-        logger = logging.getLogger(self.__class__.__name__)
+        logger = logging.getLogger(__package__ + '.' + self.__class__.__name__)
 
         failed_values = []
 
