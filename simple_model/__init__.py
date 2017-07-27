@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '1.1.3'
+__version__ = '1.1.4'
 
 class Attribute(object):
     __type__     = None
@@ -179,6 +179,6 @@ class Model(object):
         else:
             object.__setattr__(self, name, value)
 
-from simple_model.helpers import list_type
+from simple_model.helpers import list_type, one_of
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
