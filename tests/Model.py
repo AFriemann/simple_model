@@ -179,4 +179,15 @@ class ModelCastTestCase(unittest.TestCase):
         with self.assertRaises(AttributeError):
             result.a = 'd'
 
+    def test_model_with_private_attributes(self):
+        class Foo(Model):
+            a = Attribute(str)
+
+            __b = 'b'
+
+        result = Foo(a='a')
+
+        self.assertEqual(result.a, 'a')
+        self.assertEqual(result.__b, 'b')
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
