@@ -21,28 +21,30 @@ class Attribute(object):
     __type__ = None
     __name__ = None
     __alias__ = None
+    __fallback__ = None
     __default__ = None
-    __value__ = None
     __optional__ = False
 
-    def __init__(self, t, name=None, alias=None, optional=False, fallback=None):
+    def __init__(self, t, name=None, alias=None, optional=False, fallback=None, default=None):
         if t is None:
             raise ValueError('attribute type can not be None')
 
         self.__type__     = t
         self.__name__     = name
         self.__alias__    = alias
-        self.__default__  = fallback
+        self.__fallback__  = fallback
+        self.__default__ = default
         self.__optional__ = optional
 
     def __iter__(self):
         yield 'class', self.__class__.__name__
         yield 'name', self.__name__
         yield 'type', self.__type__
+        yield 'fallback', self.__fallback__
         yield 'default', self.__default__
         yield 'optional', self.__optional__
         yield 'alias', self.__alias__
-        yield 'value', self.__value__
+        yield 'value', self.value
 
     def __str__(self):
         return str(dict(self))
@@ -61,16 +63,19 @@ class Attribute(object):
 
     @property
     def value(self):
-        return self.__value__
+        try:
+            return self.__value__
+        except AttributeError:
+            return self.__default__
 
     @value.setter
     def value(self, value):
         if value is None:
-            if self.__default__ is not None:
+            if self.__fallback__ is not None:
                 try:
-                    self.__value__ = self.__type__(self.__default__())
+                    self.__value__ = self.__type__(self.__fallback__())
                 except TypeError:
-                    self.__value__ = self.__type__(self.__default__)
+                    self.__value__ = self.__type__(self.__fallback__)
             elif self.__optional__:
                 self.__value__ = None
             else:
