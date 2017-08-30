@@ -8,7 +8,7 @@
 
 """
 
-import os, pip, sys
+import os, sys
 from subprocess import Popen, PIPE
 
 try:
@@ -37,10 +37,6 @@ def check_version_against_tag():
     if tag and tag != __version__:
         raise Exception('internal version {} is not equal to deployed version {}'.format(__version__, tag))
 
-install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
-
-requirements = [str(ir.req) for ir in install_reqs if ir is not None]
-
 if 'upload' in sys.argv or 'register' in sys.argv:
     check_version_against_tag()
 
@@ -54,7 +50,7 @@ setup(name             = "simple_model",
       version          = __version__,
       license          = read('LICENSE.txt'),
       long_description = read('README.rst'),
-      install_requires = requirements,
+      install_requires = [],
       classifiers      = [],
       packages         = ["simple_model"],
       platforms        = 'linux'

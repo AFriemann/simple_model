@@ -96,6 +96,29 @@ class ModelTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Foo(data = 'abc', blub = 1)
 
+    def test_model_with_private_attributes(self):
+        class Foo(Model):
+            a = Attribute(str)
+
+            __b = 'b'
+
+        result = Foo(a='a')
+
+        self.assertEqual(result.a, 'a')
+        self.assertEqual(result.__b, 'b')
+
+    def test_model_with_other_attributes(self):
+        class Foo(Model):
+            a = Attribute(str)
+
+            b = 'b'
+
+        result = Foo(a='a')
+
+        self.assertEqual(result.a, 'a')
+        self.assertEqual(result.b, 'b')
+
+
 class ModelCastTestCase(unittest.TestCase):
     def setUp(self):
         class Data1(Model):
@@ -179,15 +202,5 @@ class ModelCastTestCase(unittest.TestCase):
         with self.assertRaises(AttributeError):
             result.a = 'd'
 
-    def test_model_with_private_attributes(self):
-        class Foo(Model):
-            a = Attribute(str)
-
-            __b = 'b'
-
-        result = Foo(a='a')
-
-        self.assertEqual(result.a, 'a')
-        self.assertEqual(result.__b, 'b')
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

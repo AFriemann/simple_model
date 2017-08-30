@@ -3,11 +3,10 @@ python:
     - "2.7"
     - "3.4"
 install:
-    - pip install -r requirements.txt
     - pip install .
+    - pip install nose rednose git+https://github.com/afriemann/spec
 script:
-    - py.test tests
-    - py.test --doctest-module README.rst
+    - nosetests --with-doctest --with-specplugin
 deploy:
     - provider: pypi
       distributions: sdist
