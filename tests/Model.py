@@ -100,11 +100,13 @@ class ModelTestCase(unittest.TestCase):
         class Foo(Model):
             a = Attribute(str)
 
+            _b = 'b'
             __b = 'b'
 
         result = Foo(a='a')
 
         self.assertEqual(result.a, 'a')
+        self.assertEqual(result._b, 'b')
         self.assertEqual(result.__b, 'b')
 
     def test_model_with_other_attributes(self):

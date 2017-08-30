@@ -90,10 +90,10 @@ class Model(object):
     def attributes(self):
         for key in dir(self):
             if key != 'attributes' and not key.startswith('_'):
-                value = object.__getattribute__(self, key)
+                obj = object.__getattribute__(self, key)
 
-                if issubclass(type(value), Attribute):
-                    yield key, copy.deepcopy(value)
+                if issubclass(type(obj), Attribute):
+                    yield key, copy.deepcopy(obj)
 
     def __iter__(self):
         for key, attribute in self.attributes:
@@ -164,14 +164,16 @@ class Model(object):
         return str(dict(self))
 
     def __getattribute__(self, name):
-        attr = object.__getattribute__(self, name)
-        if issubclass(type(attr), Attribute):
-            return attr.value
+        obj = object.__getattribute__(self, name)
+
+        if issubclass(type(obj), Attribute):
+            return obj.value
         else:
-            return attr
+            return obj
 
     def __setattr__(self, name, value):
         attr = object.__getattribute__(self, name)
+
         if issubclass(type(attr), Attribute):
             if not self.__mutable__: raise AttributeError('Model is immutable')
             attr.value = value
