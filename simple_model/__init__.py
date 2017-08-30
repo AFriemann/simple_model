@@ -171,13 +171,22 @@ class Model(object):
             return attr
 
     def __setattr__(self, name, value):
-        attr = object.__getattribute__(self, name)
-        if issubclass(type(attr), Attribute):
-            if not self.__mutable__: raise AttributeError('Model is immutable')
-            attr.value = value
-            object.__setattr__(self, name, attr)
-        else:
-            object.__setattr__(self, name, value)
+        try:
+            obj = object.__getattribute__(self, name)
+        except AttributeError:
+            obj = None
+
+        if issubclass(type(obj), Attribute):
+            if obj.value == value:
+                return
+            elif not self.__mutable__:
+                raise AttributeError('Model is immutable')
+
+            obj.value = value
+            value = obj
+
+        object.__setattr__(self, name, value)
+
 
 from simple_model.helpers import list_type, one_of
 
