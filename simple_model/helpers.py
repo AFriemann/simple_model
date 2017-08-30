@@ -10,26 +10,32 @@
 
 from simple_model import Model
 
+
 class list_type():
     def __init__(self, t):
         self.__type__ = t
 
     def __call__(self, lst):
         if issubclass(self.__type__, Model):
-            return [ self.__type__(**e) for e in lst ]
+            return [self.__type__(**e) for e in lst]
         else:
-            return [ self.__type__(e) for e in lst ]
+            return [self.__type__(e) for e in lst]
 
     def __repr__(self):
-        return str({ 'list_type': self.__type__ })
+        return str(
+            {'list_type': self.__type__}
+        )
 
     def __str__(self):
         return self.__repr__()
 
+
 def one_of(*args):
     def f(value):
         if value not in args:
-            raise ValueError('must be one of {} but was \'{}\''.format(args, value))
+            raise ValueError(
+                'must be one of {} but was \'{}\''.format(args, value)
+            )
         return value
     return f
 

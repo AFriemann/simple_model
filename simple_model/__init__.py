@@ -9,16 +9,20 @@
 
 """
 
-import abc, logging, copy
+import abc
+import logging
+import copy
+import warnings
 
 __version__ = '1.1.4'
 
+
 class Attribute(object):
-    __type__     = None
-    __name__     = None
-    __alias__    = None
-    __default__  = None
-    __value__    = None
+    __type__ = None
+    __name__ = None
+    __alias__ = None
+    __default__ = None
+    __value__ = None
     __optional__ = False
 
     def __init__(self, t, name=None, alias=None, optional=False, fallback=None):
@@ -102,7 +106,10 @@ class Model(object):
             if attribute.value is None and self.__hide_unset__:
                 continue
             elif isinstance(attribute.value, list):
-                value = [ dict(v) if isinstance(v, Model) else v for v in attribute.value ]
+                value = [
+                    dict(v) if isinstance(v, Model) else v
+                    for v in attribute.value
+                ]
             elif isinstance(attribute.value, Model):
                 value = dict(attribute.value)
             else:
@@ -117,7 +124,8 @@ class Model(object):
         return False
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__) and dict(self) == dict(other))
+        return (isinstance(other, self.__class__) and
+                dict(self) == dict(other))
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -129,22 +137,28 @@ class Model(object):
 
         for key, attribute in self.attributes:
             name = attribute.name or key
-            value = kwargs.get(name, kwargs.get(key, kwargs.get(attribute.alias)))
+            value = kwargs.get(
+                    name, kwargs.get(key, kwargs.get(attribute.alias)))
 
-            logger.debug('[{}] parsing attribute {} with value "{}"'.format(name, attribute, value))
+            logger.debug(
+                '[{}] parsing attribute {} with value "{}"'.format(
+                    name, attribute, value))
 
             try:
                 attribute.value = value
                 object.__setattr__(self, key, attribute)
             except Exception as e:
-                logger.warning('[{}] failed to parse value "{}" with {}'.format(name, value, attribute))
+                logger.warning(
+                    '[{}] failed to parse value "{}" with {}'.format(
+                        name, value, attribute))
 
                 failed_values.append(
                     {
                         'key': str(name),
                         'attribute': str(attribute),
                         'value': str(value),
-                        'exception': '{0}: {1}'.format(e.__class__.__name__, str(e))
+                        'exception': '{0}: {1}'.format(
+                            e.__class__.__name__, str(e))
                     }
                 )
 
