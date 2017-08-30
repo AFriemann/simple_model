@@ -8,15 +8,13 @@
 
 """
 
-import os, pip, sys
+import os, sys
 from subprocess import Popen, PIPE
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-
-from simple_model import __version__
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname), 'r').read()
@@ -30,31 +28,40 @@ def current_commit():
 def git_tag_for(commit):
     return sh('git', 'tag', '--points-at', commit)
 
-def check_version_against_tag():
+def latest_tag():
+    return sh('git', 'describe', '--abbrev=0', '--tags')
+
+def get_version():
     commit = current_commit()
     tag = git_tag_for(commit)
 
-    if tag and tag != __version__:
-        raise Exception('internal version {} is not equal to deployed version {}'.format(__version__, tag))
+    return tag or '{}-{}'.format(latest_tag(), commit)
 
-install_reqs = pip.req.parse_requirements('requirements.txt', session=pip.download.PipSession())
+def set_version(version):
+    template = read('simple_model/__init__.py')
 
-requirements = [str(ir.req) for ir in install_reqs if ir is not None]
+    with open('simple_model/__init__.py', 'w') as output:
+        for line in template.split('\n'):
+            if 'VERSION' in line:
+                line = line.replace('<VERSION>', version)
+            output.write(line + os.linesep)
+
+VERSION = get_version()
 
 if 'upload' in sys.argv or 'register' in sys.argv:
-    check_version_against_tag()
+    set_version(VERSION)
 
 setup(name             = "simple_model",
       author           = "Aljosha Friemann",
       author_email     = "aljosha.friemann@gmail.com",
       description      = "very simple model framework",
       url              = "https://www.github.com/afriemann/simple_model.git",
-      download_url     = "https://github.com/AFriemann/simple_model/archive/{}.tar.gz".format(__version__),
+      download_url     = "https://github.com/AFriemann/simple_model/archive/{}.tar.gz".format(VERSION),
       keywords         = ['model','serialization','validation'],
-      version          = __version__,
+      version          = VERSION,
       license          = read('LICENSE.txt'),
       long_description = read('README.rst'),
-      install_requires = requirements,
+      install_requires = [],
       classifiers      = [],
       packages         = ["simple_model"],
       platforms        = 'linux'
