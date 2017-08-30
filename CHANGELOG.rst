@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.1.4
+-----
+* It should now be possible to set Model attributes after initialization
+
 1.1.3
 -----
 * changed Model logger so simple_model logs can be turned off easily

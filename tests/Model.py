@@ -96,6 +96,7 @@ class ModelTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Foo(data = 'abc', blub = 1)
 
+
 class ModelCastTestCase(unittest.TestCase):
     def setUp(self):
         class Data1(Model):
@@ -178,5 +179,6 @@ class ModelCastTestCase(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             result.a = 'd'
+
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

@@ -202,10 +202,6 @@ To run the tests use tox::
 
     $ tox
 
-Or run py.test manually (not recommended, needs simple_module installed)::
-
-    $ py.test .
-
 Issues
 ------
 
