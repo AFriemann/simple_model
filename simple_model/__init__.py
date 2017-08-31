@@ -80,113 +80,224 @@ class Attribute(object):
             except TypeError:
                 self.__value__ = self.__type__(value)
 
+    def get(self):
+        return self.value
+
+    def set(self, value):
+        self.value = value
+
+class Property(object):
+    def __new__(self, ptype, name=None, alias=None, optional=False, fallback=None):
+        backend = Attribute(ptype, name, alias, optional, fallback)
+
+        def get_value(cls):
+            return backend.value
+
+        def set_value(cls, new_value):
+            backend.value = new_value
+
+        def del_value():
+            del backend
+
+        return property(get_value, set_value, del_value, "TODO: some property")
+
+def fgetattr(obj, key, otype=None):
+    try:
+        attr = getattr(obj, key)
+    except AttributeError:
+        return None
+
+    if otype is not None:
+        if type(attr) is not otype:
+            return None
+
+    return attr
+
 class Model(object):
-    __metaclass__  = abc.ABCMeta
+    def attach_dyn_prop(instance, prop_name, prop):
+        """
+        Attach prop_fn to instance with name prop_name.
+        Assumes that prop_fn takes self as an argument.
+        Reference: https://stackoverflow.com/a/1355444/509706
+        """
+        class_name = instance.__class__.__name__ + 'Dynamic'
+        child_class = type(class_name, (instance.__class__,), {prop_name: prop})
 
-    __hide_unset__     = False
-    __ignore_unknown__ = True
-    __mutable__        = True
-
-    @property
-    def attributes(self):
-        for key in dir(self):
-            if key != 'attributes' and not key.startswith('_'):
-                value = object.__getattribute__(self, key)
-
-                if issubclass(type(value), Attribute):
-                    yield key, copy.deepcopy(value)
-
-    def __iter__(self):
-        for key, attribute in self.attributes:
-            name = attribute.name or key
-
-            if attribute.value is None and self.__hide_unset__:
-                continue
-            elif isinstance(attribute.value, list):
-                value = [ dict(v) if isinstance(v, Model) else v for v in attribute.value ]
-            elif isinstance(attribute.value, Model):
-                value = dict(attribute.value)
-            else:
-                value = attribute.value
-
-            yield name, value
-
-    def __contains__(self, item):
-        for key, _ in self.attributes:
-            if key == item:
-                return True
-        return False
-
-    def __eq__(self, other):
-        return (isinstance(other, self.__class__) and dict(self) == dict(other))
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
+        instance.__class__ = child_class
 
     def __init__(self, **kwargs):
-        logger = logging.getLogger(__package__ + '.' + self.__class__.__name__)
+        mutable = self.mutable
+        self.mutable = True
 
-        failed_values = []
+        self.__build_properties__()
 
-        for key, attribute in self.attributes:
-            name = attribute.name or key
-            value = kwargs.get(name, kwargs.get(key, kwargs.get(attribute.alias)))
+        self._logger = logging.getLogger(__package__ + '.' + self.__class__.__name__)
 
-            logger.debug('[{}] parsing attribute {} with value "{}"'.format(name, attribute, value))
+        for key, attr in self.properties.items():
+            setattr(self, key, kwargs.get(key))
 
-            try:
-                attribute.value = value
-                object.__setattr__(self, key, attribute)
-            except Exception as e:
-                logger.warning('[{}] failed to parse value "{}" with {}'.format(name, value, attribute))
+        self.mutable = mutable
 
-                failed_values.append(
-                    {
-                        'key': str(name),
-                        'attribute': str(attribute),
-                        'value': str(value),
-                        'exception': '{0}: {1}'.format(e.__class__.__name__, str(e))
-                    }
-                )
+    def __build_properties__(self):
+        for key in dir(self):
+            attribute = fgetattr(self, key, Attribute)
+            if attribute is not None:
+                self.properties.update({key: attribute})
+                self.attach_dyn_prop(key, self.__create_property__(key))
 
-        if not self.__ignore_unknown__:
-            failed_values.extend([
-                'Unknown key "{}" with value "{}"'.format(key, value)
-                for key, value in kwargs.items() if key not in self
-            ])
+    def __create_property__(self, name):
+        def pget(cls):
+            return cls.properties.get(name).value
 
-        if len(failed_values) != 0:
-            raise ValueError(*failed_values)
+        def pset(cls, value):
+            if not self.mutable:
+                raise AttributeError(
+                    "can't set attribute '{}', {} is immutable".format(
+                        name, self.__class__))
 
-    def __repr__(self):
-        return str(dict(self))
+            return cls.properties.get(name).set(value)
 
-    def __str__(self):
-        return str(dict(self))
+        def pdel(cls):
+            del self.properties[name]
 
-    def __getattribute__(self, name):
-        attr = object.__getattribute__(self, name)
-        if issubclass(type(attr), Attribute):
-            return attr.value
-        else:
-            return attr
+        return property(pget, pset if self.mutable else None, pdel)
 
-    def __setattr__(self, name, value):
+    @property
+    def properties(self):
         try:
-            obj = object.__getattribute__(self, name)
+            return self._properties
         except AttributeError:
-            obj = None
+            self._properties = dict()
+            return self._properties
 
-        if issubclass(type(obj), Attribute):
-            if obj.value == value:
-                return
-            elif not self.__mutable__:
-                raise AttributeError('Model is immutable')
+    @property
+    def mutable(self):
+        try:
+            return self.__mutable__
+        except AttributeError:
+            self.__mutable__ = False
+            return self.__mutable__
 
-            obj.value = value
-            value = obj
+    @mutable.setter
+    def mutable(self, value):
+        self.__mutable__ = value
 
-        object.__setattr__(self, name, value)
+    def __valid_key__(self, key):
+        return not (
+            key.startswith('_') or key.endswith('_')
+        )
+
+    def __contains__(self, key):
+        return key in self.properties
+
+
+# class Model(object):
+#     __metaclass__  = abc.ABCMeta
+#
+#     __hide_unset__     = False
+#     __ignore_unknown__ = True
+#     __mutable__        = True
+#
+#     @property
+#     def attributes(self):
+#         for key in dir(self):
+#             if key != 'attributes' and not key.startswith('_'):
+#                 value = object.__getattribute__(self, key)
+#
+#                 if issubclass(type(value), Attribute):
+#                     yield key, copy.deepcopy(value)
+#
+#     def __iter__(self):
+#         for key, attribute in self.attributes:
+#             name = attribute.name or key
+#
+#             if attribute.value is None and self.__hide_unset__:
+#                 continue
+#             elif isinstance(attribute.value, list):
+#                 value = [ dict(v) if isinstance(v, Model) else v for v in attribute.value ]
+#             elif isinstance(attribute.value, Model):
+#                 value = dict(attribute.value)
+#             else:
+#                 value = attribute.value
+#
+#             yield name, value
+#
+#     def __contains__(self, item):
+#         for key, _ in self.attributes:
+#             if key == item:
+#                 return True
+#         return False
+#
+#     def __eq__(self, other):
+#         return (isinstance(other, self.__class__) and dict(self) == dict(other))
+#
+#     def __ne__(self, other):
+#         return not self.__eq__(other)
+#
+#     def __init__(self, **kwargs):
+#         logger = logging.getLogger(__package__ + '.' + self.__class__.__name__)
+#
+#         failed_values = []
+#
+#         for key, attribute in self.attributes:
+#             name = attribute.name or key
+#             value = kwargs.get(name, kwargs.get(key, kwargs.get(attribute.alias)))
+#
+#             logger.debug('[{}] parsing attribute {} with value "{}"'.format(name, attribute, value))
+#
+#             try:
+#                 attribute.value = value
+#                 object.__setattr__(self, key, attribute)
+#             except Exception as e:
+#                 logger.warning('[{}] failed to parse value "{}" with {}'.format(name, value, attribute))
+#
+#                 failed_values.append(
+#                     {
+#                         'key': str(name),
+#                         'attribute': str(attribute),
+#                         'value': str(value),
+#                         'exception': '{0}: {1}'.format(e.__class__.__name__, str(e))
+#                     }
+#                 )
+#
+#         if not self.__ignore_unknown__:
+#             failed_values.extend([
+#                 'Unknown key "{}" with value "{}"'.format(key, value)
+#                 for key, value in kwargs.items() if key not in self
+#             ])
+#
+#         if len(failed_values) != 0:
+#             raise ValueError(*failed_values)
+#
+#     def __repr__(self):
+#         return str(dict(self))
+#
+#     def __str__(self):
+#         return str(dict(self))
+#
+#     def __getattribute__(self, name):
+#         attr = object.__getattribute__(self, name)
+#         if issubclass(type(attr), Attribute):
+#             return attr.value
+#         else:
+#             return attr
+#
+#     def __setattr__(self, name, value):
+#         try:
+#             obj = object.__getattribute__(self, name)
+#         except AttributeError:
+#             obj = None
+#
+#         if issubclass(type(obj), Attribute):
+#             if obj.value == value:
+#                 return
+#             elif not self.__mutable__:
+#                 raise AttributeError('Model is immutable')
+#
+#             obj.value = value
+#             value = obj
+#
+#         object.__setattr__(self, name, value)
 
 
 from simple_model.helpers import list_type, one_of
