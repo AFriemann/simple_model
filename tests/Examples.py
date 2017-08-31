@@ -15,9 +15,7 @@ import unittest
 
 from simple_model import Model, Attribute
 
-class ExampleTestCase(unittest.TestCase):
-    """Tests for the examples"""
-
+class Examples(unittest.TestCase):
     class Data(Model):
         name = Attribute(str)
         some_value = Attribute(str, optional=True)

@@ -13,7 +13,7 @@ import unittest
 from simple_model import Model, Attribute
 from simple_model.helpers import list_type
 
-class ListTypeTestCase(unittest.TestCase):
+class ListType(unittest.TestCase):
     def test_with_simple_types(self):
         self.assertEqual(list_type(str)([1, 'b']), ['1', 'b'])
 
