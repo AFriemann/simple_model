@@ -14,7 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 
-from simple_model import Model, Attribute
+from simple_model import Attribute
+from simple_model.pbm import Model
 from simple_model.helpers import list_type
 
 class Models(unittest.TestCase):
@@ -76,11 +77,13 @@ class Models(unittest.TestCase):
 
     def test_should_hide_unset_if_wanted(self):
         class Foo(Model):
-            __hide_unset__ = True
             optional_attribute = Attribute(str, optional=True)
 
         result = Foo()
 
+        self.assertEqual(dict(result), {'optional_attribute': None})
+
+        result.hide_unset = True
         self.assertEqual(dict(result), {})
 
     def test_should_raise_if_unknown_disallowed(self):
@@ -123,6 +126,9 @@ class ModelCasting(unittest.TestCase):
 
     def test_cast_to_dict_should_work(self):
         data2 = self.Data2(model_value = { 'value': 'abc' })
+        print(data2)
+        d = dict(data2)
+        print(d)
         self.assertDictEqual(dict(data2), {'model_value': {'value': 'abc'}})
 
     def test_should_serialize_all_contained_models(self):
@@ -173,7 +179,7 @@ class ModelCasting(unittest.TestCase):
         result.a = 'c'
         self.assertEqual(result.a, 'c')
 
-        result.__mutable__ = False
+        result.mutable = False
 
         with self.assertRaises(AttributeError):
             result.a = 'd'
