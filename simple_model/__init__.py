@@ -33,7 +33,6 @@ class Attribute(object):
         self.__optional__ = optional
 
     def __iter__(self):
-        yield 'class', self.__class__.__name__
         yield 'name', self.__name__
         yield 'type', self.__type__
         yield 'default', self.__default__
@@ -62,6 +61,7 @@ class Attribute(object):
 
     @value.setter
     def value(self, value):
+        print('attribute: value: %s' % str(value))
         if value is None:
             if self.__default__ is not None:
                 try:

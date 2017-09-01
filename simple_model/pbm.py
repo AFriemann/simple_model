@@ -39,15 +39,16 @@ class Model(object):
         self._logger = logging.getLogger(__package__ + '.' + self.__class__.__name__)
 
         errors = []
-        for key, attr in self.__attributes.items():
+        for key, attr in self.attributes.items():
+            value = kwargs.get(key, kwargs.get(attr.alias))
             try:
-                setattr(self, key, kwargs.get(key))
+                setattr(self, key, value)
             except Exception as e:
-                errors.append('Failed attribute `{}` {}'.format(key, e))
+                errors.append('Failed attribute `{}` {} with value {}: {}'.format(key, attr, value, e))
 
         if not self.ignore_unknown:
             for key, value in kwargs.items():
-                if key not in self.attributes:
+                if key not in self:
                     errors.append(
                         "Unknown key `{}` with value `{}`".format(key, value)
                     )
@@ -94,7 +95,7 @@ class Model(object):
         self.__hide_unset__ = value
 
     def __iter__(self):
-        for key in self.__attributes:
+        for key in self.attributes:
             value = getattr(self, key)
             if value is None and self.hide_unset:
                 continue
@@ -103,7 +104,7 @@ class Model(object):
             yield key, value
 
     def __contains__(self, key):
-        return key in self.__attributes
+        return key in self.attributes
 
     def __eq__(self, other):
         try:
@@ -132,7 +133,7 @@ class Model(object):
 
     def __create_property__(self, name):
         def pget(cls):
-            return cls.__attributes.get(name).value
+            return cls.attributes.get(name).value
 
         def pset(cls, value):
             if not cls.mutable:
@@ -140,10 +141,10 @@ class Model(object):
                     "can't set attribute '{}', {} is immutable".format(
                         name, self.__class__))
 
-            cls.__attributes.get(name).value = value
+            cls.attributes.get(name).value = value
 
         def pdel(cls):
-            del cls.__attributes[name]
+            del cls.attributes[name]
 
         return property(pget, pset if self.mutable else None, pdel)
 

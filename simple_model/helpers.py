@@ -9,13 +9,15 @@
 """
 
 from simple_model import Model
+from simple_model.pbm import Model as PBModel
 
 class list_type():
     def __init__(self, t):
         self.__type__ = t
 
     def __call__(self, lst):
-        if issubclass(self.__type__, Model):
+        if (issubclass(self.__type__, Model) or
+            issubclass(self.__type__, PBModel)):
             return [ self.__type__(**e) for e in lst ]
         else:
             return [ self.__type__(e) for e in lst ]
