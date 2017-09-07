@@ -11,7 +11,7 @@
 
 import abc, logging, copy
 
-__version__ = '<VERSION>'
+__version__ = '1.1.5'
 
 
 class Attribute(object):
