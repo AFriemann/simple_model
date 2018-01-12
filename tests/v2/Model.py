@@ -92,4 +92,20 @@ def test_model_stacking():
 
     assert StackedModel(**s) == s
 
+
+def test_model_with_custom_init():
+    @Model()
+    @Attribute('foobar', type=str)
+    class InitModel:
+        def __init__(self, arg, omg=None):
+            """foobar"""
+            self.arg = arg
+            self.omg = omg
+
+    m = InitModel(123, foobar='abcdef', omg=456)
+
+    assert m.foobar == 'abcdef'
+    assert m.arg == 123
+    assert m.omg == 456
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

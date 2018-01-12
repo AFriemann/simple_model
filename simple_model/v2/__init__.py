@@ -30,14 +30,16 @@ class Model:
     def __call__(self, model):
         model.__slots__ = set((a.name for a in model.__attributes__))
 
-        def __init__(cls, **kwargs):
+        custom_init = getattr(model, '__init__', None)
+
+        def __init__(cls, *args, **kwargs):
             errors = []
 
             for attribute in cls.__attributes__:
-                value = kwargs.get(attribute.name, None)
+                value = kwargs.pop(attribute.name, None)
 
                 if value is None and attribute.alias is not None:
-                    value = kwargs.get(attribute.alias, None)
+                    value = kwargs.pop(attribute.alias, None)
 
                 try:
                     attribute.set(value=value)
@@ -55,6 +57,12 @@ class Model:
 
             if errors:
                 raise ModelError(cls.__class__.__name__, errors)
+
+            if custom_init:
+                custom_init(cls, *args, **kwargs)
+
+        if custom_init is not None:
+            __init__.__doc__ = custom_init.__doc__
 
         def __getitem__(cls, key):
             for attribute in cls.__attributes__:
