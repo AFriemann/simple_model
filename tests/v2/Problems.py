@@ -13,7 +13,7 @@ class TestModel:
     pass
 
 
-def test_mutability_fails_with_oldstyle_class():
+def test_immutability_fails_with_oldstyle_class():
     m = TestModel(foo='abc')
 
     if sys.version_info.major > 2:
