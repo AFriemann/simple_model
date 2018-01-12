@@ -21,7 +21,7 @@ class TestModel:
     pass
 
 
-class ModelTest(unittest.TestCase):
+class ModelV2Test(unittest.TestCase):
     def test_creation(self):
         m = TestModel(foo='abc')
 
