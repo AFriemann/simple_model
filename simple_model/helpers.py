@@ -8,7 +8,8 @@
 
 """
 
-from simple_model import Model
+from simple_model.v1 import Model
+
 
 class list_type():
     def __init__(self, t):
@@ -25,6 +26,7 @@ class list_type():
 
     def __str__(self):
         return self.__repr__()
+
 
 def one_of(*args):
     def f(value):
