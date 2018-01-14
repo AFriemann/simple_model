@@ -146,12 +146,14 @@ class Attribute:
             if self.optional:
                 return value
             elif self.default is not None:
-                return self.type(self.default)
+                try:
+                    return self.type(self.default())
+                except TypeError:
+                    return self.type(self.default)
 
-        # TODO this is weird
-        if hasattr(self.type, '__attributes__'):
+        try:
             return self.type(**value)
-        else:
+        except TypeError:
             return self.type(value)
 
     def set(self, model=None, value=None):
