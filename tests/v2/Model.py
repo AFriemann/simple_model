@@ -143,6 +143,12 @@ def test_model_inheritance():
         def decode(self):
             raise NotImplementedError
 
+    try:
+        Super(encode='hjkl')
+        assert False, 'Could initialize un-initializable Model'
+    except NotImplementedError:
+        pass
+
     @Model()
     @Attribute('encode', type=lambda s: s.encode())
     class Child(Super):

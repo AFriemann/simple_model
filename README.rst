@@ -97,7 +97,7 @@ Fallback values can also be given as functions
     ...     return "foo"
 
     >>> @Model()
-    ... @Attribute('point', type=str, default=fun)
+    ... @Attribute('point', type=str, fdefault=fun)
     ... class Data(object):
     ...     pass
 

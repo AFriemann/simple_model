@@ -106,20 +106,23 @@ class Model:
 
 
 class Attribute:
-    def __init__(self, name, type, optional=False, default=None, mutable=None, alias=None, help=None):
+    def __init__(self, name, type, optional=False, default=None, fdefault=None, mutable=None, alias=None, help=None):
         self.name = name
         self.type = type
         self.default = default
+        self.fdefault = fdefault
         self.optional = optional
         self.mutable = mutable
         self.alias = alias
         self.help = help
 
-        if self.type is not None and self.default is not None:
-            try:
+        try:
+            if self.default is not None:
                 self.parse(self.default)
-            except Exception as e:
-                raise ValueError("Invalid default value %s for type %s" % (self.default, self.type), e)
+            elif self.fdefault is not None:
+                self.parse(self.fdefault())
+        except Exception as e:
+            raise ValueError("Invalid default value(s) (%s/%s) for type %s" % (self.default, self.fdefault, self.type), e)
 
     def __call__(self, model):
         if not hasattr(model, '__attributes__'):
@@ -146,10 +149,9 @@ class Attribute:
             if self.optional:
                 return value
             elif self.default is not None:
-                try:
-                    return self.type(self.default())
-                except TypeError:
-                    return self.type(self.default)
+                return self.type(self.default)
+            elif self.fdefault is not None:
+                return self.type(self.fdefault())
 
         try:
             return self.type(**value)
@@ -159,6 +161,8 @@ class Attribute:
     def set(self, model=None, value=None):
         try:
             self.value = self.parse(value)
+        except NotImplementedError as e:
+            raise e
         except Exception as e:
             raise ValueError("Invalid value for Attribute: %s" % value, e)
 
