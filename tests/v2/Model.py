@@ -29,12 +29,23 @@ def test_creation():
         pass
 
 
+def test_memory_independence():
+    m1 = TestModel(foo='abc', baz=33)
+
+    assert m1.foo == 'abc', 'expected "abc" but got "%s"' % (m1.foo)
+    assert m1.baz == 33, 'expected 33 but got %s' % m1.baz
+
+    m2 = TestModel(foo='def')
+
+    assert m2.foo == 'def', 'expected "def" but got "%s"' % (m2.foo)
+    assert m2.baz == 12, 'expected default 12 but got %s' % m2.baz
+
+
 def test_mutability():
     m = TestModel(foo='abc')
 
     assert m.foo == 'abc'
 
-    print('mutating foo')
     m.foo = 'fofo'
 
     assert m.foo == 'fofo'
@@ -44,6 +55,19 @@ def test_mutability():
         assert False, 'Attribute is mutable'
     except AttributeError:
         pass
+
+    @Model()
+    @Attribute('foobar', type=int, mutable=True)
+    class TestModel2(object):
+        pass
+
+    m2 = TestModel2(foobar=12)
+
+    assert m2.foobar == 12
+
+    m2.foobar = 3
+
+    assert m2.foobar == 3
 
 
 def test_attribute_aliasing():
@@ -107,5 +131,28 @@ def test_model_with_custom_init():
     assert m.foobar == 'abcdef'
     assert m.arg == 123
     assert m.omg == 456
+
+
+def test_model_inheritance():
+    def not_implemented(*args, **kwargs):
+        raise NotImplementedError
+
+    @Model()
+    @Attribute('encode', type=not_implemented)
+    class Super(object):
+        def decode(self):
+            raise NotImplementedError
+
+    @Model()
+    @Attribute('encode', type=lambda s: s.encode())
+    class Child(Super):
+        def decode(self):
+            return self.encode.decode()
+
+    m = Child(encode='abcdef')
+
+    assert m.encode == b'abcdef'
+    assert m.decode() == 'abcdef'
+
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
