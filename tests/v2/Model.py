@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from simple_model.v2 import Model, Attribute
+from simple_model.v2 import Model, Attribute, Unset
 
 
-@Model(mutable=True)
+@Model(mutable=True, hide_unset=True)
 @Attribute('foo', type=str, help='foo is a str')
 @Attribute('bar', type=int, optional=True, mutable=False)
 @Attribute('baz', type=int, default=12)
@@ -18,7 +18,10 @@ def test_creation():
 
     assert m.foo == 'abc'
     assert m.baz == 12
-    assert m.bar is None
+
+    assert 'bar' not in m
+
+    assert m.bar is Unset
 
     assert m['foo'] == 'abc'
 
@@ -159,6 +162,19 @@ def test_model_inheritance():
 
     assert m.encode == b'abcdef'
     assert m.decode() == 'abcdef'
+
+
+def test_model_hides_unset_attributes_if_specified():
+    @Model(hide_unset=True)
+    @Attribute('foo', type=str, optional=True)
+    @Attribute('bar', type=str, optional=True)
+    class MyModel(object):
+        pass
+
+    m = MyModel(foo='abc')
+
+    assert 'bar' not in dict(m)
+    assert 'bar' not in m
 
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8

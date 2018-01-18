@@ -34,7 +34,7 @@ Examples:
 
     >>> @Model(drop_unknown=True)
     ... @Attribute('name', type=str)
-    ... @Attribute('some_value', type=str, optional=True)
+    ... @Attribute('some_value', type=str, optional=True, nullable=True)
     ... @Attribute('another_value', type=int, default=0)
     ... class Data(object):
     ...     pass
@@ -43,7 +43,7 @@ Examples:
     {'another_value': 12, 'name': 'test', 'some_value': None}
 
     >>> pprint(dict(Data(name = 'test')))
-    {'another_value': 0, 'name': 'test', 'some_value': None}
+    {'another_value': 0, 'name': 'test', 'some_value': Ellipsis}
 
     >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
     >>> pprint(dict(Data(**init_dict)))
@@ -58,7 +58,7 @@ Unknown values will be ignored for Models with *drop_unknown* set to True
 .. code:: python
 
     >>> pprint(dict(Data(name = 'test', unknown_value = True)))
-    {'another_value': 0, 'name': 'test', 'some_value': None}
+    {'another_value': 0, 'name': 'test', 'some_value': Ellipsis}
 
 
 Serialization can be achieved easily, for example
