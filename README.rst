@@ -30,20 +30,18 @@ Examples:
 
 .. code:: python
 
-    >>> from simple_model.v2 import Model, Attribute, ModelError
+    >>> from simple_model import Model, Attribute
 
-    >>> @Model(drop_unknown=True)
-    ... @Attribute('name', type=str)
-    ... @Attribute('some_value', type=str, optional=True, nullable=True)
-    ... @Attribute('another_value', type=int, default=0)
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     name = Attribute(str)
+    ...     some_value = Attribute(str, optional=True)
+    ...     another_value = Attribute(int, fallback=0)
 
     >>> pprint(dict(Data(name = 'test', some_value = None, another_value = 12)))
     {'another_value': 12, 'name': 'test', 'some_value': None}
 
     >>> pprint(dict(Data(name = 'test')))
-    {'another_value': 0, 'name': 'test', 'some_value': Ellipsis}
+    {'another_value': 0, 'name': 'test', 'some_value': None}
 
     >>> init_dict = {'name': 'test', 'some_value': 'val', 'another_value': 3}
     >>> pprint(dict(Data(**init_dict)))
@@ -53,12 +51,12 @@ Initializing with missing attributes while not specifying them as optional or pr
 will result in a *ValueError* containing all failed attributes.
 Note that *fallback* takes precedence over *optional*, specifying both is unnecessary.
 
-Unknown values will be ignored for Models with *drop_unknown* set to True
+Unknown values will be ignored
 
 .. code:: python
 
     >>> pprint(dict(Data(name = 'test', unknown_value = True)))
-    {'another_value': 0, 'name': 'test', 'some_value': Ellipsis}
+    {'another_value': 0, 'name': 'test', 'some_value': None}
 
 
 Serialization can be achieved easily, for example
@@ -67,7 +65,7 @@ Serialization can be achieved easily, for example
 
     >>> import json
     >>> def serialize(model):
-    ...     return json.dumps(model)
+    ...     return json.dumps(dict(model))
 
     >>> def deserialize(string):
     ...     return Data(**json.loads(string))
@@ -81,12 +79,10 @@ given 'type', one could easily use functions instead of types to achieve more co
     >>> def parse_date(string):
     ...     return datetime.strptime(string, '%Y-%m-%d')
 
-    >>> @Model()
-    ... @Attribute('date', type=parse_date)
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     date = Attribute(parse_date)
 
-    >>> Data(date='2015-11-20')
+    >>> dict(Data(date='2015-11-20'))
     {'date': datetime.datetime(2015, 11, 20, 0, 0)}
 
 Fallback values can also be given as functions
@@ -96,24 +92,20 @@ Fallback values can also be given as functions
     >>> def fun():
     ...     return "foo"
 
-    >>> @Model()
-    ... @Attribute('point', type=str, fdefault=fun)
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     point = Attribute(str, fallback=fun)
 
-    >>> Data()
+    >>> dict(Data())
     {'point': 'foo'}
 
 If you need to verify Lists of objects, use functions
 
 .. code:: python
 
-    >>> @Model()
-    ... @Attribute('points', type=lambda l: list(map(str, l)))
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     points = Attribute(lambda l: list(map(str, l)))
 
-    >>> Data(points=['abc', 'def', 'ghi'])
+    >>> dict(Data(points=['abc', 'def', 'ghi']))
     {'points': ['abc', 'def', 'ghi']}
 
 Or the included *list_type* helper class
@@ -121,50 +113,37 @@ Or the included *list_type* helper class
 .. code:: python
 
     >>> from simple_model.helpers import list_type
+    >>> class Data(Model):
+    ...     points = Attribute(list_type(str))
 
-    >>> @Model()
-    ... @Attribute('points', type=list_type(str))
-    ... class Data(object):
-    ...     pass
-
-    >>> Data(points=['abc', 'def', 'ghi'])
+    >>> dict(Data(points=['abc', 'def', 'ghi']))
     {'points': ['abc', 'def', 'ghi']}
 
 For more complex data, use Models to verify
 
 .. code:: python
 
-    >>> @Model()
-    ... @Attribute('some_value', type=str)
-    ... @Attribute('some_other_value', type=int)
-    ... class SubData(object):
-    ...     pass
+     >>> class SubData(Model):
+     ...     some_value = Attribute(str)
+     ...     some_other_value = Attribute(int)
 
-    >>> @Model()
-    ... @Attribute('point', type=SubData)
-    ... class Data(object):
-    ...     pass
+     >>> class Data(Model):
+     ...     point = Attribute(SubData)
 
-    >>> pprint(dict(Data(point={'some_value': 'abc', 'some_other_value': 12})))
-    {'point': {'some_other_value': 12, 'some_value': 'abc'}}
-
-    >>> sub_data = SubData(some_value='abc', some_other_value=12)
-    >>> pprint(dict(Data(point=sub_data)))
-    {'point': {'some_other_value': 12, 'some_value': 'abc'}}
+     >>> pprint(dict(Data(point={'some_value': 'abc', 'some_other_value': 12})))
+     {'point': {'some_other_value': 12, 'some_value': 'abc'}}
 
 To allow uncommon names, use the Attribute name keyword
 
 .. code:: python
 
-    >>> @Model()
-    ... @Attribute('point', type=str, alias='@point')
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     point = Attribute(str, name='@point')
 
-    >>> Data(point='something')
+    >>> dict(Data(point='something'))
     {'@point': 'something'}
 
-    >>> Data(**{ '@point': 'something' })
+    >>> dict(Data(**{ '@point': 'something' }))
     {'@point': 'something'}
 
 To easily check against expected values you can use the helper function *one_of*
@@ -172,63 +151,37 @@ To easily check against expected values you can use the helper function *one_of*
 .. code:: python
 
     >>> from simple_model.helpers import one_of
+    >>> class Data(Model):
+    ...     foo = Attribute(one_of('bar', 'foobar'))
 
-    >>> @Model()
-    ... @Attribute('foo', type=one_of('bar', 'foobar'))
-    ... class Data(object):
-    ...     pass
-
-    >>> Data(foo='bar')
+    >>> dict(Data(foo='bar'))
     {'foo': 'bar'}
 
-    >>> Data(foo='foo') # doctest: +ELLIPSIS +IGNORE_EXCEPTION_DETAIL
+    >>> dict(Data(foo='foo')) # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    ModelError: Data
-    - attribute: {'name': 'foo', 'type': ..., 'default': None, 'optional': False, 'mutable': True, 'alias': None, 'help': None, 'value': 'bar'}
-      value: "foo"
-      exception: ('Invalid value for Attribute: foo', ValueError("must be one of ('bar', 'foobar') but was 'foo'",))
+    ValueError: {...'exception': "ValueError: must be one of ('bar', 'foobar') but was 'foo'"...}
 
-If you want to disallow unknown values, set the *ignore_unknown* attribute to False
+If you want to disallow unknown values, set the __ignore_unknown__ attribute to False
 
 .. code:: python
 
-    >>> @Model(ignore_unknown=False)
-    ... @Attribute('point', type=str)
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     __ignore_unknown__ = False
+    ...
+    ...     point = Attribute(str)
 
-    >>> Data(point = 'abc', other = 'def') # doctest: +ELLIPSIS +IGNORE_EXCEPTION_DETAIL
+    >>> Data(point = 'abc', other = 'def')
     Traceback (most recent call last):
         ...
-    simple_model.v2.ModelError: Data
-    - attribute: None
-      value: "def"
-      exception: Unknown attribute "other"
+    ValueError: Unknown key "other" with value "def"
 
-Models are immutable by default
+You can now set Models to be mutable and change Attribute values after creation
 
 .. code:: python
 
-    >>> @Model()
-    ... @Attribute('point', type=int)
-    ... class Data(object):
-    ...     pass
-
-    >>> d = Data(point = 1)
-    >>> d.point = 2  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    AttributeError: can't set attribute
-
-You can set Models to be mutable and change Attribute values after creation
-
-.. code:: python
-
-    >>> @Model(mutable=True)
-    ... @Attribute('point', type=int)
-    ... class Data(object):
-    ...     pass
+    >>> class Data(Model):
+    ...     point = Attribute(int)
 
     >>> d = Data(point = 1)
     >>> d.point
@@ -236,24 +189,11 @@ You can set Models to be mutable and change Attribute values after creation
     >>> d.point = 2
     >>> d.point
     2
-
-This can also be done on a per Attribute basis
-
-.. code:: python
-
-  >>> @Model()
-  ... @Attribute('point', type=int, mutable=True)
-  ... class Data(object):
-  ...       pass
-
-  >>> d = Data(point=12)
-  >>> d.point
-  12
-  >>> d.point = 2
-  >>> d.point
-  2
-
-**Note**: This only works with new-style python classes, so make sure to inherit *object* if you're using python 2.
+    >>> d.__mutable__ = False
+    >>> d.point = 3
+    Traceback (most recent call last):
+        ...
+    AttributeError: Model is immutable
 
 Tests
 -----
