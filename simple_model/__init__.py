@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-.. module: TODO
-    :platform: TODO
-    :synopsis: TODO
+.. module:: simple_model
+   :platform: Unix
+   :synopsis: Simple models for easy data (de-)serialization and validation.
 
 .. moduleauthor:: Aljosha Friemann a.friemann@automate.wtf
 """
