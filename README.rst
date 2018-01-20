@@ -9,6 +9,8 @@ simple_model
 As the name suggests, this is a very simple model framework. It can be used for data
 validation and (de-)serialization.
 
+**New** Head over to v2_ now!
+
 Installation
 ------------
 
@@ -212,5 +214,6 @@ Changelog
 
 see `CHANGELOG`_
 
+.. _v2: README.v2.rst
 .. _CHANGELOG: CHANGELOG.rst
 .. _GitHub: https://github.com/afriemann/simple_model/issues
