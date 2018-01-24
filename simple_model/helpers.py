@@ -8,17 +8,15 @@
 
 """
 
-from simple_model.v1 import Model
-
 
 class list_type():
     def __init__(self, t):
         self.__type__ = t
 
     def __call__(self, lst):
-        if issubclass(self.__type__, Model):
+        try:
             return [ self.__type__(**e) for e in lst ]
-        else:
+        except TypeError:
             return [ self.__type__(e) for e in lst ]
 
     def __repr__(self):

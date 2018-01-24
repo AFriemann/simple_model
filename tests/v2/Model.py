@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from simple_model.v2 import Model, Attribute, Unset
+from simple_model.helpers import list_type
 
 
 @Model(mutable=True, hide_unset=True)
@@ -118,6 +119,23 @@ def test_model_stacking():
     assert m is not s.foobar
 
     assert StackedModel(**s) == s
+
+
+def test_list_model_stacking():
+    @Model()
+    @Attribute('foobar', type=list_type(TestModel))
+    class StackedModel:
+        pass
+
+    m1 = TestModel(foo='abc')
+    m2 = TestModel(foo='def')
+
+    s = StackedModel(foobar=[m1, m2])
+
+    assert s is not None
+
+    for unit in s.foobar:
+        assert isinstance(unit, TestModel)
 
 
 def test_model_with_custom_init():
