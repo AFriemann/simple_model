@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from simple_model.v2 import Model, Attribute, Unset
 from simple_model.helpers import list_type
 
@@ -66,6 +68,25 @@ def test_mutability():
     m2.foobar = 3
 
     assert m2.foobar == 3
+
+
+def test_global_immutability():
+    @Model(mutable=False)
+    @Attribute('foobar', type=str)
+    class TestModel:
+        pass
+
+    m = TestModel(foobar='abc')
+
+    try:
+        m.foobar = 'def'
+
+        if sys.version_info.major > 2:
+            assert False, 'Attribute is mutable'
+        else:
+            assert m.foobar == 'def', 'Attribute is mutable'
+    except AttributeError:
+        pass
 
 
 def test_attribute_aliasing():

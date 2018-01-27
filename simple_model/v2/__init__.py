@@ -6,8 +6,23 @@ import copy
 Unset = Ellipsis
 
 
+class ModelError(RuntimeError):
+    def __str__(self):
+        def format_arg(arg):
+            return '- attribute: {}\n  value: "{}"\n  exception: {}'.format(
+                arg[0].name if arg[0] else None, arg[1], arg[2]
+            ).strip()
+
+        return '{name}\n{errors}'.format(
+            name=self.args[0],
+            errors='\n'.join(
+                format_arg(arg.args) for arg in self.args[1]
+            )
+        )
+
+
 class Model(object):
-    def __init__(self, mutable=False, hide_unset=False, drop_unknown=False, ignore_unknown=True):
+    def __init__(self, mutable=True, hide_unset=False, drop_unknown=False, ignore_unknown=True):
         self.mutable = mutable
         self.hide_unset = hide_unset
         self.drop_unknown = drop_unknown
@@ -17,20 +32,38 @@ class Model(object):
         old_init = getattr(model, '__init__', None)
 
         def new_init(cls, *args, **kwargs):
+            exceptions = []
+
             for attribute in cls.__attributes__:
                 if hasattr(cls, attribute.name):
                     if getattr(cls, attribute.name) is not Unset:
                         continue
 
                 value = kwargs.pop(attribute.name,
-                                   kwargs.pop(attribute.alias, Unset))
+                        kwargs.pop(attribute.alias, Unset))  # noqa: E128
 
                 try:
                     attribute.fset(cls, value)
-                except ValueError as e:
-                    exception = ValueError(attribute.name, value, e)
+                except (AttributeError, ValueError) as e:
+                    exception = AttributeError(attribute, value, e)
                     exception.__cause__ = None
-                    raise exception
+                    exceptions.append(exception)
+
+                if not self.mutable:
+                    setattr(model, attribute.name,
+                            property(fget=getattr(model, attribute.name).fget)
+                            )
+
+            if kwargs:
+                if self.drop_unknown:
+                    kwargs = {}
+                elif not self.ignore_unknown:
+                    exceptions.extend(
+                        (AttributeError(None, v, 'Unknown attribute "%s"' % k) for k, v in kwargs.items())
+                    )
+
+            if exceptions:
+                raise ModelError(cls.__class__.__name__, exceptions)
 
             if old_init:
                 old_init(cls, *args, **kwargs)
@@ -57,7 +90,8 @@ class Model(object):
         model.__eq__ = lambda cls, o: (issubclass(o.__class__, cls.__class__) and dict(cls) == dict(o))
         model.__contains__ = lambda cls, key: getattr(cls, key) not in [None, Unset]
         model.keys = lambda cls: sorted(
-            [a.name for a in cls.__attributes__ if (getattr(cls, a.name) not in [None, Unset] or not self.hide_unset)]
+            [a.alias or a.name for a in cls.__attributes__ if (
+                getattr(cls, a.name) not in [None, Unset] or not self.hide_unset)]
         )
 
         return model
@@ -127,7 +161,7 @@ class Attribute(object):
             if self.optional:
                 return value
             else:
-                raise ValueError("Attribute is not optional")
+                raise AttributeError(self, value, "Attribute is not optional")
         elif value is None:
             if self.nullable:
                 return None
