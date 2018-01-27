@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from simple_model.v2 import Model, Attribute, Unset
 from simple_model.helpers import list_type
 
 
-@Model(mutable=True, hide_unset=True)
+@Model(hide_unset=True)
 @Attribute('foo', type=str, help='foo is a str')
 @Attribute('bar', type=int, optional=True, mutable=False)
 @Attribute('baz', type=int, default=12)
@@ -19,18 +21,9 @@ def test_creation():
 
     assert m.foo == 'abc'
     assert m.baz == 12
-
-    assert 'bar' not in m
-
     assert m.bar is Unset
 
-    assert m['foo'] == 'abc'
-
-    try:
-        m['fooo']
-        assert False, 'did not raise KeyError for unknown attribute'
-    except KeyError:
-        pass
+    assert 'bar' not in m
 
 
 def test_memory_independence():
@@ -43,6 +36,9 @@ def test_memory_independence():
 
     assert m2.foo == 'def', 'expected "def" but got "%s"' % (m2.foo)
     assert m2.baz == 12, 'expected default 12 but got %s' % m2.baz
+
+    assert m1.foo == 'abc', 'expected "abc" but got "%s"' % (m1.foo)
+    assert m1.baz == 33, 'expected 33 but got %s' % m1.baz
 
 
 def test_mutability():
@@ -74,31 +70,46 @@ def test_mutability():
     assert m2.foobar == 3
 
 
+def test_global_immutability():
+    @Model(mutable=False)
+    @Attribute('foobar', type=str)
+    class TestModel:
+        pass
+
+    m = TestModel(foobar='abc')
+
+    try:
+        m.foobar = 'def'
+
+        if sys.version_info.major > 2:
+            assert False, 'Attribute is mutable'
+        else:
+            assert m.foobar == 'def', 'Attribute is mutable'
+    except AttributeError:
+        pass
+
+
 def test_attribute_aliasing():
     @Model()
     @Attribute('foobar', type=str, alias='@foobar')
-    class AliasModel:
+    class AliasModel(object):
         pass
 
     m = AliasModel(**{'@foobar': 'abc'})
 
     assert m.foobar == 'abc'
-    assert m['@foobar'] == 'abc'
-    assert m.foobar is m['@foobar']
 
     del m
 
     m = AliasModel(foobar='abc')
 
     assert m.foobar == 'abc'
-    assert m['@foobar'] == 'abc'
-    assert m.foobar is m['@foobar']
 
 
 def test_model_stacking():
     @Model()
     @Attribute('foobar', type=TestModel)
-    class StackedModel:
+    class StackedModel(object):
         pass
 
     s = StackedModel(foobar={'foo': 'abc'})

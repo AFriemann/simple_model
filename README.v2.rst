@@ -26,6 +26,9 @@ to work:
 
     >>> from pprint import pprint
 
+*Note*: casting Data to a dict as it is done here is unnecessary as well. However pprint does not sort models in
+Python 2 without the cast for some reason.
+
 Examples:
 
 .. code:: python
@@ -184,10 +187,10 @@ To easily check against expected values you can use the helper function *one_of*
     >>> Data(foo='foo') # doctest: +ELLIPSIS +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    ModelError: Data
-    - attribute: {'name': 'foo', 'type': ..., 'default': None, 'optional': False, 'mutable': True, 'alias': None, 'help': None, 'value': 'bar'}
+    simple_model.v2.ModelError: Data
+    - attribute: foo
       value: "foo"
-      exception: ('Invalid value for Attribute: foo', ValueError("must be one of ('bar', 'foobar') but was 'foo'",))
+      exception: must be one of ('bar', 'foobar') but was 'foo'
 
 If you want to disallow unknown values, set the *ignore_unknown* attribute to False
 
@@ -206,26 +209,11 @@ If you want to disallow unknown values, set the *ignore_unknown* attribute to Fa
       value: "def"
       exception: Unknown attribute "other"
 
-Models are immutable by default
+Models are mutable by default
 
 .. code:: python
 
     >>> @Model()
-    ... @Attribute('point', type=int)
-    ... class Data(object):
-    ...     pass
-
-    >>> d = Data(point = 1)
-    >>> d.point = 2  # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-        ...
-    AttributeError: can't set attribute
-
-You can set Models to be mutable and change Attribute values after creation
-
-.. code:: python
-
-    >>> @Model(mutable=True)
     ... @Attribute('point', type=int)
     ... class Data(object):
     ...     pass
@@ -236,6 +224,27 @@ You can set Models to be mutable and change Attribute values after creation
     >>> d.point = 2
     >>> d.point
     2
+
+.. fix vim syntax issues: '
+
+You can set Models to be immutable
+
+.. code:: python
+
+    >>> @Model(mutable=False)
+    ... @Attribute('point', type=int)
+    ... class Data(object):
+    ...     pass
+
+    >>> d = Data(point = 1)
+    >>> d.point
+    1
+    >>> d.point = 2
+    Traceback (most recent call last):
+        ...
+    AttributeError: can't set attribute
+
+.. fix syntax: '
 
 This can also be done on a per Attribute basis
 
