@@ -26,6 +26,14 @@ def test_creation():
     assert 'bar' not in m
 
 
+def test_attribute_uses_default_when_not_nullable():
+    m = TestModel(foo='def', baz=None)
+
+    assert m.foo == 'def'
+    assert m.baz is 12
+    assert m.bar is Unset
+
+
 def test_memory_independence():
     m1 = TestModel(foo='abc', baz=33)
 
