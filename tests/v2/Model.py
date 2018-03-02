@@ -34,6 +34,21 @@ def test_attribute_uses_default_when_not_nullable():
     assert m.bar is Unset
 
 
+def test_attribute_evalutes_fdefault():
+    @Model()
+    @Attribute('foobar', type=int, fdefault=lambda: 10)
+    class TestModel2(object):
+        pass
+
+    m = TestModel2()
+
+    assert m.foobar == 10
+
+    m = TestModel2(foobar=None)
+
+    assert m.foobar == 10
+
+
 def test_memory_independence():
     m1 = TestModel(foo='abc', baz=33)
 
