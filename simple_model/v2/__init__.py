@@ -152,6 +152,12 @@ class Attribute(object):
     def fdel(self, cls):
         setattr(cls, self.value_name, Unset)
 
+    def get_default(self):
+        if self.default is not None:
+            return self.default
+        elif self.fdefault is not None:
+            return self.fdefault()
+
     @property
     def value_name(self):
         return '_%s' % self.name

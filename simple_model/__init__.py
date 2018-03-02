@@ -9,7 +9,7 @@
 
 __version__ = '1.2.2'
 
-from simple_model.helpers import list_type, one_of
-from simple_model.v1 import Model, Attribute
+from simple_model.helpers import list_type, one_of  # noqa: F401
+from simple_model.v1 import Model, Attribute  # noqa: F401
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
