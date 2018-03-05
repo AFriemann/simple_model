@@ -7,7 +7,7 @@
 .. moduleauthor:: Aljosha Friemann a.friemann@automate.wtf
 """
 
-__version__ = '1.2.3'
+__version__ = '1.2.4'
 
 from simple_model.helpers import list_type, one_of  # noqa: F401
 from simple_model.v1 import Model, Attribute  # noqa: F401

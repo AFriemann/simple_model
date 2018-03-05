@@ -157,6 +157,8 @@ class Attribute(object):
             return self.default
         elif self.fdefault is not None:
             return self.fdefault()
+        else:
+            raise AttributeError(self, "Attribute has not default")
 
     @property
     def value_name(self):
