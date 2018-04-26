@@ -179,7 +179,7 @@ class Attribute(object):
         if not self.value_by_reference:
             value = copy.deepcopy(value)
 
-        if self.type is None:
+        if self.type is None or self.type is type(value):
             return value
 
         try:
