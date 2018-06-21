@@ -13,6 +13,14 @@ clean:
 	-find . -type f -iname "*.pyc" | xargs -r rm
 	-find . -type d -iname "__pycache__" | xargs -r rm -rf
 
+deploy: clean
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
+
+deploy-test: clean
+	python setup.py sdist bdist_wheel
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
 help:
 	@echo 'Usage:'
 	@echo '  make [TARGET]'
