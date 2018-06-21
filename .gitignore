@@ -6,4 +6,5 @@ dist
 .tox
 .cache
 .coverage
+.pytest_cache
 *.egg-info

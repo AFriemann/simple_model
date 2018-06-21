@@ -10,12 +10,12 @@ from simple_model.helpers import list_type
 @Attribute('foo', type=str, help='foo is a str')
 @Attribute('bar', type=int, optional=True, mutable=False)
 @Attribute('baz', type=int, default=12)
-class TestModel(object):
+class UUTModel(object):
     pass
 
 
 def test_creation():
-    m = TestModel(foo='abc')
+    m = UUTModel(foo='abc')
 
     assert m is not None
 
@@ -27,7 +27,7 @@ def test_creation():
 
 
 def test_attribute_uses_default_when_not_nullable():
-    m = TestModel(foo='def', baz=None)
+    m = UUTModel(foo='def', baz=None)
 
     assert m.foo == 'def'
     assert m.baz is 12
@@ -37,25 +37,25 @@ def test_attribute_uses_default_when_not_nullable():
 def test_attribute_evalutes_fdefault():
     @Model()
     @Attribute('foobar', type=int, fdefault=lambda: 10)
-    class TestModel2(object):
+    class UUTModel2(object):
         pass
 
-    m = TestModel2()
+    m = UUTModel2()
 
     assert m.foobar == 10
 
-    m = TestModel2(foobar=None)
+    m = UUTModel2(foobar=None)
 
     assert m.foobar == 10
 
 
 def test_memory_independence():
-    m1 = TestModel(foo='abc', baz=33)
+    m1 = UUTModel(foo='abc', baz=33)
 
     assert m1.foo == 'abc', 'expected "abc" but got "%s"' % (m1.foo)
     assert m1.baz == 33, 'expected 33 but got %s' % m1.baz
 
-    m2 = TestModel(foo='def')
+    m2 = UUTModel(foo='def')
 
     assert m2.foo == 'def', 'expected "def" but got "%s"' % (m2.foo)
     assert m2.baz == 12, 'expected default 12 but got %s' % m2.baz
@@ -65,7 +65,7 @@ def test_memory_independence():
 
 
 def test_mutability():
-    m = TestModel(foo='abc')
+    m = UUTModel(foo='abc')
 
     assert m.foo == 'abc'
 
@@ -81,10 +81,10 @@ def test_mutability():
 
     @Model()
     @Attribute('foobar', type=int, mutable=True)
-    class TestModel2(object):
+    class UUTModel2(object):
         pass
 
-    m2 = TestModel2(foobar=12)
+    m2 = UUTModel2(foobar=12)
 
     assert m2.foobar == 12
 
@@ -96,10 +96,10 @@ def test_mutability():
 def test_global_immutability():
     @Model(mutable=False)
     @Attribute('foobar', type=str)
-    class TestModel:
+    class UUTModel:
         pass
 
-    m = TestModel(foobar='abc')
+    m = UUTModel(foobar='abc')
 
     try:
         m.foobar = 'def'
@@ -131,23 +131,23 @@ def test_attribute_aliasing():
 
 def test_model_stacking():
     @Model()
-    @Attribute('foobar', type=TestModel)
+    @Attribute('foobar', type=UUTModel)
     class StackedModel(object):
         pass
 
     s = StackedModel(foobar={'foo': 'abc'})
 
     assert s is not None
-    assert isinstance(s.foobar, TestModel)
+    assert isinstance(s.foobar, UUTModel)
 
     del s
 
-    m = TestModel(foo='abc')
+    m = UUTModel(foo='abc')
 
     s = StackedModel(foobar=m)
 
     assert s is not None
-    assert isinstance(s.foobar, TestModel)
+    assert isinstance(s.foobar, UUTModel)
 
     assert m == s.foobar
     assert m is not s.foobar
@@ -157,19 +157,19 @@ def test_model_stacking():
 
 def test_list_model_stacking():
     @Model()
-    @Attribute('foobar', type=list_type(TestModel))
+    @Attribute('foobar', type=list_type(UUTModel))
     class StackedModel:
         pass
 
-    m1 = TestModel(foo='abc')
-    m2 = TestModel(foo='def')
+    m1 = UUTModel(foo='abc')
+    m2 = UUTModel(foo='def')
 
     s = StackedModel(foobar=[m1, m2])
 
     assert s is not None
 
     for unit in s.foobar:
-        assert isinstance(unit, TestModel)
+        assert isinstance(unit, UUTModel)
 
 
 def test_model_with_custom_init():
