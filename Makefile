@@ -12,6 +12,7 @@ clean:
 	-rm -rf *.egg-info
 	-find . -type f -iname "*.pyc" | xargs -r rm
 	-find . -type d -iname "__pycache__" | xargs -r rm -rf
+	-rm -rf dist build
 
 deploy: clean
 	python setup.py sdist bdist_wheel
@@ -19,7 +20,7 @@ deploy: clean
 
 deploy-test: clean
 	python setup.py sdist bdist_wheel
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	twine upload --repository test dist/*
 
 help:
 	@echo 'Usage:'
