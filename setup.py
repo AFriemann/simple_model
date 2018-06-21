@@ -27,21 +27,21 @@ setup(
     author="Aljosha Friemann",
     author_email="a.friemann@automate.wtf",
     description="very simple model framework",
-    long_description=read('README.rst'),
-    license=read('LICENSE.txt'),
+    long_description=open('README.rst').read(),
+    license=open('LICENSE.txt').read(),
     url="https://github.com/afriemann/simple_model",
     download_url="https://github.com/afriemann/simple_model/archive/{}.tar.gz".format(__version__),
     packages=find_packages(exclude=('test*', 'assets')),
     install_requires=[],
     platforms=['linux'],
     keywords=['model', 'serialization', 'validation', 'dataclass'],
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
         "Topic :: Software Development :: Libraries",
         "License :: OSI Approved :: BSD License",
-    )
+    ],
 )
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
