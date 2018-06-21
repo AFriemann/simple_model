@@ -214,6 +214,6 @@ Changelog
 
 see `CHANGELOG`_
 
-.. _v2: README.v2.rst
-.. _CHANGELOG: CHANGELOG.rst
+.. _v2: https://github.com/AFriemann/simple_model/blob/master/README.v2.rst
+.. _CHANGELOG: https://github.com/AFriemann/simple_model/blob/master/CHANGELOG.rst
 .. _GitHub: https://github.com/afriemann/simple_model/issues
