@@ -23,23 +23,24 @@ if 'upload' in sys.argv or 'register' in sys.argv:
 
 setup(
     name="simple_model",
+    version=__version__,
     author="Aljosha Friemann",
     author_email="a.friemann@automate.wtf",
     description="very simple model framework",
+    long_description=read('README.rst'),
+    license=read('LICENSE.txt'),
     url="https://github.com/afriemann/simple_model",
     download_url="https://github.com/afriemann/simple_model/archive/{}.tar.gz".format(__version__),
-    keywords=['model', 'serialization', 'validation', 'dataclass'],
-    version=__version__,
-    license=read('LICENSE.txt'),
-    long_description=read('README.rst'),
-    install_requires=[],
     packages=find_packages(exclude=('test*', 'assets')),
+    install_requires=[],
     platforms=['linux'],
+    keywords=['model', 'serialization', 'validation', 'dataclass'],
     classifiers=(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
         "Topic :: Software Development :: Libraries",
+        "License :: OSI Approved :: BSD License",
     )
 )
 
