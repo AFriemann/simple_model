@@ -98,7 +98,7 @@ class Model(object):
 
 
 class Attribute(object):
-    def __init__(self, name, type, optional=False, nullable=False, mutable=True, default=None, fdefault=None, alias=None, help=None, value_by_reference=False):
+    def __init__(self, name, type, optional=False, nullable=False, mutable=True, default=None, fdefault=None, alias=None, help=None, value_by_reference=False, transformation=None):
         self.name = name
         self.type = type
         self.default = default
@@ -109,6 +109,7 @@ class Attribute(object):
         self.alias = alias
         self.help = help
         self.value_by_reference = value_by_reference
+        self.transformation = transformation or (lambda x: x)
 
     def __repr__(self):
         return str(vars(self))
@@ -147,7 +148,7 @@ class Attribute(object):
             elif self.fdefault is not None:
                 value = self.fdefault()
 
-        setattr(cls, self.value_name, self.parse(value))
+        setattr(cls, self.value_name, self.transformation(self.parse(value)))
 
     def fdel(self, cls):
         setattr(cls, self.value_name, Unset)

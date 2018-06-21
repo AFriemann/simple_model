@@ -229,4 +229,14 @@ def test_model_hides_unset_attributes_if_specified():
     assert 'bar' not in m
 
 
+def test_model_with_transformation_function():
+    @Model()
+    @Attribute('foo', type=str, transformation=lambda s: s.lower())
+    class MyModel(object):
+        pass
+
+    m = MyModel(foo='ABCdef')
+
+    assert m.foo == 'abcdef'
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
