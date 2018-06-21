@@ -9,7 +9,7 @@ simple_model
 As the name suggests, this is a very simple model framework. It can be used for data
 validation and (de-)serialization.
 
-**New** Head over to v2_ now!
+**New** Head over to `v2 https://github.com/AFriemann/simple_model/blob/master/README.v2.rst`_ now!
 
 Installation
 ------------
@@ -207,13 +207,14 @@ To run the tests use tox::
 Issues
 ------
 
-Please submit any issues on `GitHub`_.
+Please submit any issues on `GitHub https://github.com/afriemann/simple_model/issues`_.
 
 Changelog
 ---------
 
-see `CHANGELOG`_
+see `CHANGELOG https://github.com/AFriemann/simple_model/blob/master/CHANGELOG.rst`_
 
-.. _v2: https://github.com/AFriemann/simple_model/blob/master/README.v2.rst
-.. _CHANGELOG: https://github.com/AFriemann/simple_model/blob/master/CHANGELOG.rst
-.. _GitHub: https://github.com/afriemann/simple_model/issues
+License
+-------
+
+see `LICENSE https://github.com/AFriemann/simple_model/blob/master/LICENSE.txt`_

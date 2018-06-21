@@ -28,14 +28,19 @@ setup(
     description="very simple model framework",
     url="https://github.com/afriemann/simple_model",
     download_url="https://github.com/afriemann/simple_model/archive/{}.tar.gz".format(__version__),
-    keywords=['model', 'serialization', 'validation'],
+    keywords=['model', 'serialization', 'validation', 'dataclass'],
     version=__version__,
     license=read('LICENSE.txt'),
     long_description=read('README.rst'),
     install_requires=[],
-    classifiers=[],
     packages=find_packages(exclude=('test*', 'assets')),
-    platforms=['linux']
+    platforms=['linux'],
+    classifiers=(
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Operating System :: POSIX :: Linux",
+        "Topic :: Software Development :: Libraries",
+    )
 )
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
