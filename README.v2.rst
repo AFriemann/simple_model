@@ -250,17 +250,33 @@ This can also be done on a per Attribute basis
 
 .. code:: python
 
-  >>> @Model()
-  ... @Attribute('point', type=int, mutable=True)
-  ... class Data(object):
-  ...       pass
+    >>> @Model()
+    ... @Attribute('point', type=int, mutable=True)
+    ... class Data(object):
+    ...     pass
 
-  >>> d = Data(point=12)
-  >>> d.point
-  12
-  >>> d.point = 2
-  >>> d.point
-  2
+    >>> d = Data(point=12)
+    >>> d.point
+    12
+    >>> d.point = 2
+    >>> d.point
+    2
+
+Attributes can take a transformation function to execute when setting the value
+
+.. code:: python
+
+    >>> import hashlib
+
+    >>> @Model()
+    ... @Attribute('username', type=str)
+    ... @Attribute('password', type=str, transformation=lambda s: hashlib.md5(s.encode()).hexdigest())
+    ... class User(object):
+    ...     pass
+
+    >>> u = User(username='foobar', password='foobaz')
+    >>> u.password
+    '80338e79d2ca9b9c090ebaaa2ef293c7'
 
 **Note**: This only works with new-style python classes, so make sure to inherit *object* if you're using python 2.
 
