@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.0
+-----
+* transformation function attribute added to Attribute class
+
+1.2.0
+-----
+* added decorator based v2 version
+
 1.1.4
 -----
 * It should now be possible to set Model attributes after initialization
